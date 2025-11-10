@@ -16,12 +16,11 @@ if (!File.Exists(scriptPath))
 
 try
 {
-    string scriptText = File.ReadAllText(scriptPath);
-    
     var logger = new ConsoleLogger();
     var interpreter = new Interpreter(logger);
     
-    foreach (var result in interpreter.Run(scriptText))
+    using var reader = new StreamReader(scriptPath);
+    foreach (var result in interpreter.Run(reader))
     {
         if (result is IInputRequest input)
         {
