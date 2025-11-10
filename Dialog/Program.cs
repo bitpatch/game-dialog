@@ -27,16 +27,7 @@ try
             // Handle input request
             Console.Write("Input: ");
             string? userInput = Console.ReadLine();
-            
-            // Try to parse as number, otherwise treat as string
-            if (double.TryParse(userInput, out double number))
-            {
-                input.Set(number);
-            }
-            else
-            {
-                input.Set(userInput ?? "");
-            }
+            input.Set(userInput ?? "");
         }
         else if (result != null)
         {
