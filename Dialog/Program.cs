@@ -17,21 +17,26 @@ if (!File.Exists(scriptPath))
 try
 {
     var dialog = new Dialog();
-    
+
     // Use streaming from file - no need to load entire file into memory
     using var fileStream = File.OpenRead(scriptPath);
     using var reader = new StreamReader(fileStream);
-    
+
     dialog.Execute(reader);
-    
+
     Console.WriteLine("Script executed successfully.");
     Console.WriteLine("\nVariables:");
     foreach (var variable in dialog.Variables)
     {
         Console.WriteLine($"  {variable.Key} = {variable.Value}");
     }
-    
+
     return 0;
+}
+catch (ScriptException ex)
+{
+    Console.WriteLine($"Script Error: {ex.Message}");
+    return 1;
 }
 catch (Exception ex)
 {

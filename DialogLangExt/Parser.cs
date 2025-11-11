@@ -45,7 +45,7 @@ namespace BitPatch.DialogLang
                 return ParseAssignment();
             }
 
-            throw new Exception($"Unexpected token: {_current}");
+            throw new ScriptException($"Unexpected token: {_current}");
         }
 
         /// <summary>
@@ -57,7 +57,7 @@ namespace BitPatch.DialogLang
 
             if (_current.Type != TokenType.Assign)
             {
-                throw new Exception($"Expected '=' but got {_current}");
+                throw new ScriptException($"Expected '=' but got {_current}");
             }
             MoveNext(); // consume '='
 
@@ -71,7 +71,7 @@ namespace BitPatch.DialogLang
 
             if (token.Type != TokenType.Identifier)
             {
-                throw new Exception($"Expected identifier but got {token}");
+                throw new ScriptException($"Expected identifier but got {token}");
             }
 
             MoveNext(); // consume identifier
@@ -97,7 +97,7 @@ namespace BitPatch.DialogLang
                 return new Ast.Variable(token.Value);
             }
 
-            throw new Exception($"Unexpected token in expression: {token}");
+            throw new ScriptException($"Unexpected token in expression: {token}");
         }
 
         /// <summary>

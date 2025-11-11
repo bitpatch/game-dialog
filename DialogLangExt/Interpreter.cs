@@ -51,7 +51,7 @@ namespace BitPatch.DialogLang
             }
             else
             {
-                throw new Exception($"Unknown statement type: {node.GetType().Name}");
+                throw new ScriptException($"Unknown statement type: {node.GetType().Name}");
             }
         }
 
@@ -80,10 +80,10 @@ namespace BitPatch.DialogLang
                 {
                     return value;
                 }
-                throw new Exception($"Variable '{variable.Name}' is not defined");
+                throw new ScriptException($"Variable '{variable.Name}' is not defined");
             }
 
-            throw new Exception($"Unknown expression type: {expression.GetType().Name}");
+            throw new ScriptException($"Unknown expression type: {expression.GetType().Name}");
         }
 
         /// <summary>
