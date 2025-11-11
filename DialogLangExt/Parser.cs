@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace BitPatch.DialogLang
 {
@@ -8,51 +9,57 @@ namespace BitPatch.DialogLang
     /// </summary>
     internal class Parser
     {
-        private readonly List<Token> _tokens;
-        private int _position;
+        private readonly IEnumerator<Token> _tokenEnumerator;
+        private Token _currentToken;
+        private Token? _nextToken;
 
-        public Parser(List<Token> tokens)
+        public Parser(IEnumerable<Token> tokens)
         {
-            _tokens = tokens ?? throw new ArgumentNullException(nameof(tokens));
-            _position = 0;
+            if (tokens == null)
+                throw new ArgumentNullException(nameof(tokens));
+
+            _tokenEnumerator = tokens.GetEnumerator();
+            
+            // Load first token
+            if (!_tokenEnumerator.MoveNext())
+            {
+                _currentToken = new Token(TokenType.EndOfFile, string.Empty, 0);
+            }
+            else
+            {
+                _currentToken = _tokenEnumerator.Current;
+            }
+
+            // Peek next token
+            if (_tokenEnumerator.MoveNext())
+            {
+                _nextToken = _tokenEnumerator.Current;
+            }
         }
 
         /// <summary>
-        /// Parses the tokens into an AST
+        /// Parses tokens and yields statements one by one (streaming)
         /// </summary>
-        public ProgramNode Parse()
+        public IEnumerable<AstNode> Parse()
         {
-            var program = new ProgramNode();
-
             while (!IsAtEnd())
             {
-                var statement = ParseStatement();
-                if (statement != null)
-                {
-                    program.Statements.Add(statement);
-                }
+                yield return ParseStatement();
             }
-
-            return program;
         }
 
         /// <summary>
         /// Parses a single statement
         /// </summary>
-        private AstNode? ParseStatement()
+        private AstNode ParseStatement()
         {
-            if (IsAtEnd())
-            {
-                return null;
-            }
-
             // Check if this is an assignment statement
-            if (CurrentToken.Type == TokenType.Identifier && PeekNext()?.Type == TokenType.Assign)
+            if (_currentToken.Type == TokenType.Identifier && _nextToken?.Type == TokenType.Assign)
             {
                 return ParseAssignment();
             }
 
-            throw new Exception($"Unexpected token: {CurrentToken}");
+            throw new Exception($"Unexpected token: {_currentToken}");
         }
 
         /// <summary>
@@ -60,12 +67,12 @@ namespace BitPatch.DialogLang
         /// </summary>
         private AssignNode ParseAssignment()
         {
-            var variableName = CurrentToken.Value;
+            var variableName = _currentToken.Value;
             Advance(); // consume identifier
 
-            if (CurrentToken.Type != TokenType.Assign)
+            if (_currentToken.Type != TokenType.Assign)
             {
-                throw new Exception($"Expected '=' but got {CurrentToken}");
+                throw new Exception($"Expected '=' but got {_currentToken}");
             }
             Advance(); // consume '='
 
@@ -87,7 +94,7 @@ namespace BitPatch.DialogLang
         /// </summary>
         private AstNode ParsePrimary()
         {
-            var token = CurrentToken;
+            var token = _currentToken;
 
             if (token.Type == TokenType.Integer)
             {
@@ -105,16 +112,11 @@ namespace BitPatch.DialogLang
         }
 
         /// <summary>
-        /// Current token being processed
-        /// </summary>
-        private Token CurrentToken => _tokens[_position];
-
-        /// <summary>
         /// Checks if we've reached the end of tokens
         /// </summary>
         private bool IsAtEnd()
         {
-            return _position >= _tokens.Count || CurrentToken.Type == TokenType.EndOfFile;
+            return _currentToken.Type == TokenType.EndOfFile;
         }
 
         /// <summary>
@@ -122,22 +124,24 @@ namespace BitPatch.DialogLang
         /// </summary>
         private void Advance()
         {
-            if (!IsAtEnd())
+            if (_nextToken != null)
             {
-                _position++;
+                _currentToken = _nextToken;
+                
+                // Load next token
+                if (_tokenEnumerator.MoveNext())
+                {
+                    _nextToken = _tokenEnumerator.Current;
+                }
+                else
+                {
+                    _nextToken = null;
+                }
             }
-        }
-
-        /// <summary>
-        /// Peeks at the next token without consuming it
-        /// </summary>
-        private Token? PeekNext()
-        {
-            if (_position + 1 < _tokens.Count)
+            else if (!IsAtEnd())
             {
-                return _tokens[_position + 1];
+                _currentToken = new Token(TokenType.EndOfFile, string.Empty, _currentToken.Position);
             }
-            return null;
         }
     }
 }

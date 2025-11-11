@@ -19,23 +19,20 @@ namespace BitPatch.DialogLang
         }
 
         /// <summary>
-        /// Tokenizes the entire source code
+        /// Tokenizes the source code one token at a time (streaming)
         /// </summary>
-        public List<Token> Tokenize()
+        public IEnumerable<Token> Tokenize()
         {
-            var tokens = new List<Token>();
-
             while (_position < _source.Length)
             {
                 var token = GetNextToken();
                 if (token.Type != TokenType.Unknown)
                 {
-                    tokens.Add(token);
+                    yield return token;
                 }
             }
 
-            tokens.Add(new Token(TokenType.EndOfFile, string.Empty, _position));
-            return tokens;
+            yield return new Token(TokenType.EndOfFile, string.Empty, _position);
         }
 
         /// <summary>

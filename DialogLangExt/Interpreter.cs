@@ -21,7 +21,23 @@ namespace BitPatch.DialogLang
         public IReadOnlyDictionary<string, object> Variables => _variables;
 
         /// <summary>
-        /// Executes a program
+        /// Executes statements one by one as they arrive (streaming)
+        /// </summary>
+        public void Execute(IEnumerable<AstNode> statements)
+        {
+            if (statements == null)
+            {
+                throw new ArgumentNullException(nameof(statements));
+            }
+
+            foreach (var statement in statements)
+            {
+                ExecuteStatement(statement);
+            }
+        }
+
+        /// <summary>
+        /// Executes a program (legacy method for compatibility)
         /// </summary>
         public void Execute(ProgramNode program)
         {
@@ -30,10 +46,7 @@ namespace BitPatch.DialogLang
                 throw new ArgumentNullException(nameof(program));
             }
 
-            foreach (var statement in program.Statements)
-            {
-                ExecuteStatement(statement);
-            }
+            Execute(program.Statements);
         }
 
         /// <summary>

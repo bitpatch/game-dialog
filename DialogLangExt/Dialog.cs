@@ -15,7 +15,7 @@ namespace BitPatch.DialogLang
         }
 
         /// <summary>
-        /// Executes a Game Dialog Script source code
+        /// Executes a Game Dialog Script source code (streaming mode - does not load entire code into memory)
         /// </summary>
         /// <param name="source">The source code to execute</param>
         public void Execute(string source)
@@ -25,16 +25,16 @@ namespace BitPatch.DialogLang
                 throw new ArgumentNullException(nameof(source));
             }
 
-            // Tokenize
+            // Tokenize (streaming)
             var lexer = new Lexer(source);
             var tokens = lexer.Tokenize();
 
-            // Parse
+            // Parse (streaming)
             var parser = new Parser(tokens);
-            var ast = parser.Parse();
+            var statements = parser.Parse();
 
-            // Execute
-            _interpreter.Execute(ast);
+            // Execute (streaming) - statements are executed one by one as they are parsed
+            _interpreter.Execute(statements);
         }
 
         /// <summary>
