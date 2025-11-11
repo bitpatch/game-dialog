@@ -17,9 +17,12 @@ if (!File.Exists(scriptPath))
 try
 {
     var dialog = new Dialog();
-    string source = File.ReadAllText(scriptPath);
     
-    dialog.Execute(source);
+    // Use streaming from file - no need to load entire file into memory
+    using var fileStream = File.OpenRead(scriptPath);
+    using var reader = new StreamReader(fileStream);
+    
+    dialog.Execute(reader);
     
     Console.WriteLine("Script executed successfully.");
     Console.WriteLine("\nVariables:");

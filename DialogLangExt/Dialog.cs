@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 
 namespace BitPatch.DialogLang
 {
@@ -15,7 +16,30 @@ namespace BitPatch.DialogLang
         }
 
         /// <summary>
-        /// Executes a Game Dialog Script source code (streaming mode - does not load entire code into memory)
+        /// Executes a Game Dialog Script source code from a TextReader (streaming mode)
+        /// </summary>
+        /// <param name="reader">The TextReader to read source code from</param>
+        public void Execute(TextReader reader)
+        {
+            if (reader == null)
+            {
+                throw new ArgumentNullException(nameof(reader));
+            }
+
+            // Tokenize (streaming)
+            var lexer = new Lexer(reader);
+            var tokens = lexer.Tokenize();
+
+            // Parse (streaming)
+            var parser = new Parser(tokens);
+            var statements = parser.Parse();
+
+            // Execute (streaming) - statements are executed one by one as they are parsed
+            _interpreter.Execute(statements);
+        }
+
+        /// <summary>
+        /// Executes a Game Dialog Script source code from a string
         /// </summary>
         /// <param name="source">The source code to execute</param>
         public void Execute(string source)
@@ -25,16 +49,8 @@ namespace BitPatch.DialogLang
                 throw new ArgumentNullException(nameof(source));
             }
 
-            // Tokenize (streaming)
-            var lexer = new Lexer(source);
-            var tokens = lexer.Tokenize();
-
-            // Parse (streaming)
-            var parser = new Parser(tokens);
-            var statements = parser.Parse();
-
-            // Execute (streaming) - statements are executed one by one as they are parsed
-            _interpreter.Execute(statements);
+            using var reader = new StringReader(source);
+            Execute(reader);
         }
 
         /// <summary>

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 
 namespace BitPatch.DialogLang
@@ -9,13 +10,15 @@ namespace BitPatch.DialogLang
     /// </summary>
     internal class Lexer
     {
-        private readonly string _source;
+        private readonly TextReader _reader;
+        private int _currentChar;
         private int _position;
 
-        public Lexer(string source)
+        public Lexer(TextReader reader)
         {
-            _source = source ?? throw new ArgumentNullException(nameof(source));
+            _reader = reader ?? throw new ArgumentNullException(nameof(reader));
             _position = 0;
+            _currentChar = _reader.Read();
         }
 
         /// <summary>
@@ -23,7 +26,7 @@ namespace BitPatch.DialogLang
         /// </summary>
         public IEnumerable<Token> Tokenize()
         {
-            while (_position < _source.Length)
+            while (_currentChar != -1)
             {
                 var token = GetNextToken();
                 if (token.Type != TokenType.Unknown)
@@ -41,17 +44,17 @@ namespace BitPatch.DialogLang
         private Token GetNextToken()
         {
             // Skip whitespace
-            while (_position < _source.Length && char.IsWhiteSpace(_source[_position]))
+            while (_currentChar != -1 && char.IsWhiteSpace((char)_currentChar))
             {
-                _position++;
+                Advance();
             }
 
-            if (_position >= _source.Length)
+            if (_currentChar == -1)
             {
                 return new Token(TokenType.EndOfFile, string.Empty, _position);
             }
 
-            var currentChar = _source[_position];
+            var currentChar = (char)_currentChar;
             var startPosition = _position;
 
             // Integer number
@@ -69,12 +72,12 @@ namespace BitPatch.DialogLang
             // Assignment operator
             if (currentChar == '=')
             {
-                _position++;
+                Advance();
                 return new Token(TokenType.Assign, "=", startPosition);
             }
 
             // Unknown character - skip it
-            _position++;
+            Advance();
             return new Token(TokenType.Unknown, currentChar.ToString(), startPosition);
         }
 
@@ -85,10 +88,10 @@ namespace BitPatch.DialogLang
         {
             var sb = new StringBuilder();
 
-            while (_position < _source.Length && char.IsDigit(_source[_position]))
+            while (_currentChar != -1 && char.IsDigit((char)_currentChar))
             {
-                sb.Append(_source[_position]);
-                _position++;
+                sb.Append((char)_currentChar);
+                Advance();
             }
 
             return new Token(TokenType.Integer, sb.ToString(), startPosition);
@@ -101,14 +104,23 @@ namespace BitPatch.DialogLang
         {
             var sb = new StringBuilder();
 
-            while (_position < _source.Length && 
-                   (char.IsLetterOrDigit(_source[_position]) || _source[_position] == '_'))
+            while (_currentChar != -1 && 
+                   (char.IsLetterOrDigit((char)_currentChar) || (char)_currentChar == '_'))
             {
-                sb.Append(_source[_position]);
-                _position++;
+                sb.Append((char)_currentChar);
+                Advance();
             }
 
             return new Token(TokenType.Identifier, sb.ToString(), startPosition);
+        }
+
+        /// <summary>
+        /// Advances to the next character
+        /// </summary>
+        private void Advance()
+        {
+            _currentChar = _reader.Read();
+            _position++;
         }
     }
 }
