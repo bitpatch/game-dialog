@@ -25,11 +25,6 @@ namespace BitPatch.DialogLang
         /// </summary>
         public void Execute(IEnumerable<AstNode> statements)
         {
-            if (statements == null)
-            {
-                throw new ArgumentNullException(nameof(statements));
-            }
-
             foreach (var statement in statements)
             {
                 ExecuteStatement(statement);
@@ -41,11 +36,6 @@ namespace BitPatch.DialogLang
         /// </summary>
         public void Execute(ProgramNode program)
         {
-            if (program == null)
-            {
-                throw new ArgumentNullException(nameof(program));
-            }
-
             Execute(program.Statements);
         }
 

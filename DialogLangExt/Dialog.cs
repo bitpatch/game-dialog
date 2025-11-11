@@ -58,6 +58,11 @@ namespace BitPatch.DialogLang
         /// </summary>
         public object? GetVariable(string name)
         {
+            if (name == null)
+            {
+                throw new ArgumentNullException(nameof(name));
+            }
+
             return _interpreter.GetVariable(name);
         }
 

@@ -15,9 +15,6 @@ namespace BitPatch.DialogLang
 
         public Parser(IEnumerable<Token> tokens)
         {
-            if (tokens == null)
-                throw new ArgumentNullException(nameof(tokens));
-
             _tokenEnumerator = tokens.GetEnumerator();
             
             // Load first token
