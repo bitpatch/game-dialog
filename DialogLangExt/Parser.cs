@@ -38,7 +38,7 @@ namespace BitPatch.DialogLang
                 // Expect newline or EOF after statement
                 if (!_current.IsEndOfStatement())
                 {
-                    throw new InvalidSyntaxException(_current.Line, _current.Column);
+                    throw new InvalidSyntaxException(_current.Position);
                 }
 
                 // Skip newlines after statement
@@ -54,7 +54,7 @@ namespace BitPatch.DialogLang
             return _current.Type switch
             {
                 TokenType.Identifier => ParseStatementFromIdentifier(),
-                _ => throw new InvalidSyntaxException(_current.Line, _current.Column)
+                _ => throw new InvalidSyntaxException(_current.Position)
             };
         }
 
@@ -68,7 +68,7 @@ namespace BitPatch.DialogLang
             return _next.Type switch
             {
                 TokenType.Assign => ParseAssignment(),
-                _ => throw new InvalidSyntaxException(_current.Line, _current.Column)
+                _ => throw new InvalidSyntaxException(_current.Position)
             };
         }
 
@@ -77,19 +77,16 @@ namespace BitPatch.DialogLang
         /// </summary>
         private Ast.Assign ParseAssignment()
         {
-            var line = _current.Line;
-            var column = _current.Column;
-
             var identifier = ParseIdentifier();
 
             if (_current.Type != TokenType.Assign)
             {
-                throw new ScriptException($"Expected '=' but got {_current.Type}", _current.Line, _current.Column);
+                throw new InvalidOperationException($"Expected assignment token, but current token type is {_current.Type}");
             }
             MoveNext(); // consume '='
 
             var expression = ParseExpression();
-            return new Ast.Assign(identifier, expression, line, column);
+            return new Ast.Assign(identifier, expression, identifier.Position);
         }
 
         private Ast.Identifier ParseIdentifier()
@@ -98,11 +95,11 @@ namespace BitPatch.DialogLang
 
             if (token.Type != TokenType.Identifier)
             {
-                throw new ScriptException($"Expected identifier but got {token.Type}", token.Line, token.Column);
+                throw new InvalidOperationException($"Expected identifier token, but current token type is {_current.Type}");
             }
 
             MoveNext(); // consume identifier
-            return new Ast.Identifier(token.Value, token.Line, token.Column);
+            return new Ast.Identifier(token.Value, token.Position);
         }
 
         /// <summary>
@@ -111,26 +108,15 @@ namespace BitPatch.DialogLang
         private Ast.Expression ParseExpression()
         {
             var token = _current;
+            MoveNext();
 
-            if (token.Type == TokenType.Integer)
+            return token.Type switch
             {
-                MoveNext();
-                return new Ast.Number(int.Parse(token.Value), token.Line, token.Column);
-            }
-
-            if (token.Type == TokenType.String)
-            {
-                MoveNext();
-                return new Ast.String(token.Value, token.Line, token.Column);
-            }
-
-            if (token.Type == TokenType.Identifier)
-            {
-                MoveNext();
-                return new Ast.Variable(token.Value, token.Line, token.Column);
-            }
-
-            throw new ScriptException($"Unexpected token in expression: {token.Type}", token.Line, token.Column);
+                TokenType.Integer => new Ast.Number(int.Parse(token.Value), token.Position),
+                TokenType.String => new Ast.String(token.Value, token.Position),
+                TokenType.Identifier => new Ast.Variable(token.Value, token.Position),
+                _ => throw new InvalidSyntaxException(token.Position)
+            };
         }
 
         /// <summary>
@@ -139,15 +125,7 @@ namespace BitPatch.DialogLang
         private void MoveNext()
         {
             _current = _next;
-
-            if (_tokens.MoveNext())
-            {
-                _next = _tokens.Current;
-            }
-            else
-            {
-                _next = new Token(TokenType.EndOfFile, string.Empty, _current.Line, _current.Column);
-            }
+            _next = _tokens.MoveNext() ? _tokens.Current : new Token(TokenType.EndOfFile, string.Empty, _current.Position);
         }
 
         /// <summary>

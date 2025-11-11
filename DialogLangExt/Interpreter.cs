@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using BitPatch.DialogLang.Ast;
 
 namespace BitPatch.DialogLang
 {
@@ -24,18 +23,25 @@ namespace BitPatch.DialogLang
         /// <summary>
         /// Executes statements one by one as they arrive (streaming)
         /// </summary>
-        public void Execute(IEnumerable<Node> statements)
+        public void Execute(IEnumerable<Ast.Node> nodes)
         {
-            foreach (var statement in statements)
+            foreach (var node in nodes)
             {
-                ExecuteStatement(statement);
+                switch (node)
+                {
+                    case Ast.Statement statement:
+                        ExecuteStatement(statement);
+                        break;
+                    default:
+                        throw new NotSupportedException($"Unsupported node type: {node.GetType().Name}");
+                }
             }
         }
 
         /// <summary>
         /// Executes a program (legacy method for compatibility)
         /// </summary>
-        public void Execute(Program program)
+        public void Execute(Ast.Program program)
         {
             Execute(program.Statements);
         }
@@ -43,52 +49,48 @@ namespace BitPatch.DialogLang
         /// <summary>
         /// Executes a single statement
         /// </summary>
-        private void ExecuteStatement(Node node)
+        private void ExecuteStatement(Ast.Statement node)
         {
-            if (node is Assign assign)
+            switch (node)
             {
-                ExecuteAssignment(assign);
-            }
-            else
-            {
-                throw new ScriptException($"Unknown statement type: {node.GetType().Name}", 0, 0);
+                case Ast.Assign assign:
+                     ExecuteAssignment(assign);
+                    break;
+                default:
+                    throw new NotSupportedException($"Unsupported statement type: {node.GetType().Name}");
             }
         }
 
         /// <summary>
         /// Executes an assignment statement
         /// </summary>
-        private void ExecuteAssignment(Assign node)
+        private void ExecuteAssignment(Ast.Assign node)
         {
-            var value = EvaluateExpression(node.Expression);
-            _variables[node.Identifier.Name] = value;
+            _variables[node.Identifier.Name] = EvaluateExpression(node.Expression);
         }
 
         /// <summary>
         /// Evaluates an expression and returns its value
         /// </summary>
-        private object EvaluateExpression(Expression expression)
+        private object EvaluateExpression(Ast.Expression expression)
         {
-            if (expression is Number number)
+            return expression switch
             {
-                return number.Value;
+                Ast.Number number => number.Value,
+                Ast.String str => str.Value,
+                Ast.Variable variable => EvaluateVariable(variable),
+                _ => throw new NotSupportedException($"Unsupported expression type: {expression.GetType().Name}")
+            };
+        }
+        
+        private object EvaluateVariable(Ast.Variable variable)
+        {
+            if (_variables.TryGetValue(variable.Name, out var value))
+            {
+                return value;
             }
 
-            if (expression is Ast.String str)
-            {
-                return str.Value;
-            }
-
-            if (expression is Variable variable)
-            {
-                if (_variables.TryGetValue(variable.Name, out var value))
-                {
-                    return value;
-                }
-                throw new ScriptException($"Variable '{variable.Name}' is not defined", expression.Line, expression.Column);
-            }
-
-            throw new ScriptException($"Unknown expression type: {expression.GetType().Name}", expression.Line, expression.Column);
+            throw new ScriptException($"Variable '{variable.Name}' is not defined", variable.Position);
         }
 
         /// <summary>

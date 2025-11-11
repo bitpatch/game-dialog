@@ -1,2 +1,2 @@
 a = "\"Hello World\""
-b = a 10
+b = a  

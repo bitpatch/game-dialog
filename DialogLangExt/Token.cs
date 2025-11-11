@@ -25,15 +25,21 @@ namespace BitPatch.DialogLang
     {
         public TokenType Type { get; }
         public string Value { get; }
-        public int Line { get; }
-        public int Column { get; }
+        public TokenPosition Position { get; }
+        
+        public int Line => Position.Line;
+        public int Column => Position.Column;
 
         public Token(TokenType type, string value, int line, int column)
+            : this(type, value, new TokenPosition(line, column))
+        {
+        }
+
+        public Token(TokenType type, string value, TokenPosition position)
         {
             Type = type;
             Value = value;
-            Line = line;
-            Column = column;
+            Position = position;
         }
 
         public bool IsEndOfFile()

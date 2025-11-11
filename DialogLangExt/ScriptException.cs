@@ -7,25 +7,35 @@ namespace BitPatch.DialogLang
     /// </summary>
     public class ScriptException : Exception
     {
-        public int Line { get; }
-        public int Column { get; }
+        public int Line => Position.Line;
+        public int Column => Position.Column;
+        private TokenPosition Position { get; }
 
-        public ScriptException(string message, int line, int column) : base(message)
+        internal ScriptException(string message, TokenPosition position) : base(message)
         {
-            Line = line;
-            Column = column;
+            Position = position;
         }
     }
 
     public class InvalidSyntaxException : ScriptException
     {
-        public InvalidSyntaxException(int line, int column)
-            : base("Invalid syntax", line, column)
+        internal InvalidSyntaxException(TokenPosition position)
+            : base("Invalid syntax", position)
         {
         }
 
-        public InvalidSyntaxException(string message, int line, int column)
-            : base(message, line, column)
+        internal InvalidSyntaxException(int line, int column)
+            : this(new TokenPosition(line, column))
+        {
+        }
+
+        internal InvalidSyntaxException(string message, TokenPosition position)
+            : base(message, position)
+        {
+        }
+
+        internal InvalidSyntaxException(string message, int line, int column)
+            : base(message, new TokenPosition(line, column))
         {
         }
     }

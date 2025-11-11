@@ -54,49 +54,48 @@ namespace BitPatch.DialogLang
                 MoveNextChar();
             }
 
-            var currentChar = (char)_current;
-            var startLine = _line;
-            var startColumn = _column;
-
-            return currentChar switch
+            return (char)_current switch
             {
                 // Newline (statement terminator) - skip consecutive newlines
-                '\n' => ReadNewline(startLine, startColumn),
+                '\n' => ReadNewline(),
 
                 // String literal
-                '"' => ReadString(startLine, startColumn),
+                '"' => ReadString(),
 
                 // Integer number
-                >= '0' and <= '9' => ReadNumber(startLine, startColumn),
+                >= '0' and <= '9' => ReadNumber(),
 
                 // Identifier (variable name) 
-                >= 'a' and <= 'z' => ReadIdentifier(startLine, startColumn),
-                >= 'A' and <= 'Z' => ReadIdentifier(startLine, startColumn),
-                '_' => ReadIdentifier(startLine, startColumn),
+                >= 'a' and <= 'z' => ReadIdentifier(),
+                >= 'A' and <= 'Z' => ReadIdentifier(),
+                '_' => ReadIdentifier(),
 
                 // Single-character operators
-                '=' => ReadSingleCharToken(TokenType.Assign, "=", startLine, startColumn),
+                '=' => ReadSingleCharToken(TokenType.Assign, "="),
 
                 // Unknown character
-                _ => throw new ScriptException($"Unknown character: '{currentChar}'", startLine, startColumn)
+                _ => throw new InvalidSyntaxException("Unexpected symbol", _line, _column),
             };
         }
 
         /// <summary>
         /// Creates a single-character token and advances position
         /// </summary>
-        private Token ReadSingleCharToken(TokenType type, string value, int line, int column)
+        private Token ReadSingleCharToken(TokenType type, string value)
         {
+            var position = new TokenPosition(_line, _column);
             MoveNextChar();
-            return new Token(type, value, line, column);
+            return new Token(type, value, position);
         }
 
         /// <summary>
         /// Reads an integer number from the source
         /// </summary>
-        private Token ReadNumber(int startLine, int startColumn)
+        private Token ReadNumber()
         {
             _buffer.Clear();
+
+            var position = new TokenPosition(_line, _column);
 
             while (_current != -1 && char.IsDigit((char)_current))
             {
@@ -104,15 +103,16 @@ namespace BitPatch.DialogLang
                 MoveNextChar();
             }
 
-            return new Token(TokenType.Integer, _buffer.ToString(), startLine, startColumn);
+            return new Token(TokenType.Integer, _buffer.ToString(), position);
         }
 
         /// <summary>
         /// Reads an identifier (variable name) from the source
         /// </summary>
-        private Token ReadIdentifier(int startLine, int startColumn)
+        private Token ReadIdentifier()
         {
             _buffer.Clear();
+            var position = new TokenPosition(_line, _column);
 
             while (_current != -1 && (char.IsLetterOrDigit((char)_current) || (char)_current == '_'))
             {
@@ -120,15 +120,16 @@ namespace BitPatch.DialogLang
                 MoveNextChar();
             }
 
-            return new Token(TokenType.Identifier, _buffer.ToString(), startLine, startColumn);
+            return new Token(TokenType.Identifier, _buffer.ToString(), position);
         }
 
         /// <summary>
         /// Reads a string literal from the source (enclosed in double quotes)
         /// </summary>
-        private Token ReadString(int startLine, int startColumn)
+        private Token ReadString()
         {
             _buffer.Clear();
+            var position = new TokenPosition(_line, _column);
 
             // Skip opening quote
             MoveNextChar();
@@ -139,9 +140,10 @@ namespace BitPatch.DialogLang
                 {
                     // Handle escape sequences
                     MoveNextChar();
+
                     if (_current == -1)
                     {
-                        throw new ScriptException("Unterminated string literal", startLine, startColumn);
+                        throw new InvalidSyntaxException(_line, _column);
                     }
 
                     var escapeChar = (char)_current;
@@ -152,13 +154,14 @@ namespace BitPatch.DialogLang
                         'r' => '\r',
                         '\\' => '\\',
                         '"' => '"',
-                        _ => throw new ScriptException($"Invalid escape sequence: \\{escapeChar}", _line, _column)
+                        _ => throw new InvalidSyntaxException($"Invalid escape sequence: \\{escapeChar}", _line, _column)
                     });
+
                     MoveNextChar();
                 }
                 else if ((char)_current == '\n')
                 {
-                    throw new ScriptException("Unterminated string literal (newline in string)", _line, _column);
+                    throw new InvalidSyntaxException("End of line while scanning string literal", _line, _column);
                 }
                 else
                 {
@@ -169,20 +172,23 @@ namespace BitPatch.DialogLang
 
             if (_current == -1)
             {
-                throw new ScriptException("Unterminated string literal", startLine, startColumn);
+                throw new InvalidSyntaxException("Unterminated string literal", _line, _column);
             }
 
             // Skip closing quote
             MoveNextChar();
 
-            return new Token(TokenType.String, _buffer.ToString(), startLine, startColumn);
+            return new Token(TokenType.String, _buffer.ToString(), position);
         }
 
         /// <summary>
         /// Reads a newline token, skipping consecutive newlines and whitespace between them
         /// </summary>
-        private Token ReadNewline(int startLine, int startColumn)
+        private Token ReadNewline()
         {
+            var startLine = _line;
+            var startColumn = _column;
+
             // Skip all consecutive newlines and whitespace between them
             while (_current != -1)
             {
