@@ -43,15 +43,11 @@ namespace BitPatch.DialogLang
         /// </summary>
         private Token ReadNextToken()
         {
+            SkipWhitespace();
+
             if (_current == -1)
             {
                 return new Token(TokenType.EndOfFile, string.Empty, _line, _column);
-            }
-
-            // Skip whitespace except newlines
-            while (_current != -1 && char.IsWhiteSpace((char)_current) && (char)_current != '\n')
-            {
-                MoveNextChar();
             }
 
             return (char)_current switch
@@ -227,6 +223,17 @@ namespace BitPatch.DialogLang
             }
             
             _current = _reader.Read();
+        }
+
+        /// <summary>
+        /// Skips whitespace characters except newlines
+        /// </summary>
+        private void SkipWhitespace()
+        {
+            while (_current != -1 && char.IsWhiteSpace((char)_current) && (char)_current != '\n')
+            {
+                MoveNextChar();
+            }
         }
     }
 }
