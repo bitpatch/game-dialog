@@ -17,7 +17,7 @@ namespace BitPatch.DialogLang
             _tokens = tokens.GetEnumerator();
             _current = new Token(TokenType.EndOfFile, string.Empty, 0);
             _next = new Token(TokenType.EndOfFile, string.Empty, 0);
-            
+
             // Initialize first two tokens
             MoveNext();
             MoveNext();
@@ -53,8 +53,7 @@ namespace BitPatch.DialogLang
         /// </summary>
         private Ast.Assign ParseAssignment()
         {
-            var variableName = _current.Value;
-            MoveNext(); // consume identifier
+            var identifier = ParseIdentifier();
 
             if (_current.Type != TokenType.Assign)
             {
@@ -62,23 +61,27 @@ namespace BitPatch.DialogLang
             }
             MoveNext(); // consume '='
 
-            var value = ParseExpression();
+            var expression = ParseExpression();
+            return new Ast.Assign(identifier, expression);
+        }
 
-            return new Ast.Assign(variableName, value);
+        private Ast.Identifier ParseIdentifier()
+        {
+            var token = _current;
+
+            if (token.Type != TokenType.Identifier)
+            {
+                throw new Exception($"Expected identifier but got {token}");
+            }
+
+            MoveNext(); // consume identifier
+            return new Ast.Identifier(token.Value, token.Position);
         }
 
         /// <summary>
         /// Parses an expression (for now, just literals)
         /// </summary>
         private Ast.Expression ParseExpression()
-        {
-            return ParsePrimary();
-        }
-
-        /// <summary>
-        /// Parses primary expressions (numbers, variables)
-        /// </summary>
-        private Ast.Expression ParsePrimary()
         {
             var token = _current;
 
@@ -111,7 +114,7 @@ namespace BitPatch.DialogLang
         private void MoveNext()
         {
             _current = _next;
-            
+
             if (_tokens.MoveNext())
             {
                 _next = _tokens.Current;

@@ -41,9 +41,14 @@ namespace BitPatch.DialogLang.Ast
     /// Node representing a variable reference
     /// </summary>
     internal record Variable(string Name) : Expression;
+    
+    /// <summary>
+    /// Node representing an identifier (variable name)
+    /// </summary>
+    internal record Identifier(string Name, int Position) : Node;
 
     /// <summary>
     /// Node representing an assignment statement
     /// </summary>
-    internal record Assign(string VariableName, Expression Value) : Statement;
+    internal record Assign(Identifier Identifier, Expression Expression) : Statement;
 }

@@ -60,8 +60,8 @@ namespace BitPatch.DialogLang
         /// </summary>
         private void ExecuteAssignment(Assign node)
         {
-            var value = EvaluateExpression(node.Value);
-            _variables[node.VariableName] = value;
+            var value = EvaluateExpression(node.Expression);
+            _variables[node.Identifier.Name] = value;
         }
 
         /// <summary>
