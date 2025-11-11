@@ -19,7 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\DialogLang\DialogLang.csproj" />
+    <ProjectReference Include="..\DialogLangExt\DialogLangExt.csproj" />
   </ItemGroup>
 
 </Project>
