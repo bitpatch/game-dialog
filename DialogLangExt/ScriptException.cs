@@ -16,4 +16,17 @@ namespace BitPatch.DialogLang
             Column = column;
         }
     }
+
+    public class InvalidSyntaxException : ScriptException
+    {
+        public InvalidSyntaxException(int line, int column)
+            : base("Invalid syntax", line, column)
+        {
+        }
+
+        public InvalidSyntaxException(string message, int line, int column)
+            : base(message, line, column)
+        {
+        }
+    }
 }
