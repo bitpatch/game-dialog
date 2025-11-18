@@ -21,6 +21,14 @@ namespace BitPatch.DialogLang
         Not,            // not
         Xor,            // xor
         
+        // Comparison operators
+        GreaterThan,    // >
+        LessThan,       // <
+        GreaterOrEqual, // >=
+        LessOrEqual,    // <=
+        Equal,          // ==
+        NotEqual,       // !=
+        
         // Delimiters
         LeftParen,      // (
         RightParen,     // )

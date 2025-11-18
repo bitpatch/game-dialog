@@ -73,6 +73,12 @@ namespace BitPatch.DialogLang
                 Ast.OrOp orOp => new Boolean(EvaluateOrOp(orOp)),
                 Ast.XorOp xorOp => new Boolean(EvaluateXorOp(xorOp)),
                 Ast.NotOp notOp => new Boolean(EvaluateNotOp(notOp)),
+                Ast.GreaterThanOp greaterThan => EvaluateGreaterThanOp(greaterThan),
+                Ast.LessThanOp lessThan => EvaluateLessThanOp(lessThan),
+                Ast.GreaterOrEqualOp greaterOrEqual => EvaluateGreaterOrEqualOp(greaterOrEqual),
+                Ast.LessOrEqualOp lessOrEqual => EvaluateLessOrEqualOp(lessOrEqual),
+                Ast.EqualOp equal => EvaluateEqualOp(equal),
+                Ast.NotEqualOp notEqual => EvaluateNotEqualOp(notEqual),
                 _ => throw new NotSupportedException($"Unsupported expression type: {expression.GetType().Name}")
             };
         }
@@ -153,6 +159,102 @@ namespace BitPatch.DialogLang
             }
 
             return !boolOperand.Value;
+        }
+
+        /// <summary>
+        /// Evaluates greater than comparison (>)
+        /// </summary>
+        private Boolean EvaluateGreaterThanOp(Ast.GreaterThanOp op)
+        {
+            var left = EvaluateExpression(op.Left);
+            var right = EvaluateExpression(op.Right);
+            var diff = CompareNumeric(left, right, op.Left.Position, op.Right.Position);
+            return new Boolean(diff > float.Epsilon);
+        }
+
+        /// <summary>
+        /// Evaluates less than comparison (<)
+        /// </summary>
+        private Boolean EvaluateLessThanOp(Ast.LessThanOp op)
+        {
+            var left = EvaluateExpression(op.Left);
+            var right = EvaluateExpression(op.Right);
+            var diff = CompareNumeric(left, right, op.Left.Position, op.Right.Position);
+            return new Boolean(diff < -float.Epsilon);
+        }
+
+        /// <summary>
+        /// Evaluates greater than or equal comparison (>=)
+        /// </summary>
+        private Boolean EvaluateGreaterOrEqualOp(Ast.GreaterOrEqualOp op)
+        {
+            var left = EvaluateExpression(op.Left);
+            var right = EvaluateExpression(op.Right);
+            var diff = CompareNumeric(left, right, op.Left.Position, op.Right.Position);
+            return new Boolean(diff > -float.Epsilon);
+        }
+
+        /// <summary>
+        /// Evaluates less than or equal comparison (<=)
+        /// </summary>
+        private Boolean EvaluateLessOrEqualOp(Ast.LessOrEqualOp op)
+        {
+            var left = EvaluateExpression(op.Left);
+            var right = EvaluateExpression(op.Right);
+            var diff = CompareNumeric(left, right, op.Left.Position, op.Right.Position);
+            return new Boolean(diff < float.Epsilon);
+        }
+
+        /// <summary>
+        /// Evaluates equality comparison (==)
+        /// </summary>
+        private Boolean EvaluateEqualOp(Ast.EqualOp op)
+        {
+            var left = EvaluateExpression(op.Left);
+            var right = EvaluateExpression(op.Right);
+            return new Boolean(AreEqual(left, right));
+        }
+
+        /// <summary>
+        /// Evaluates inequality comparison (!=)
+        /// </summary>
+        private Boolean EvaluateNotEqualOp(Ast.NotEqualOp op)
+        {
+            var left = EvaluateExpression(op.Left);
+            var right = EvaluateExpression(op.Right);
+            return new Boolean(!AreEqual(left, right));
+        }
+
+        /// <summary>
+        /// Compares two numeric values
+        /// </summary>
+        private float CompareNumeric(RuntimeValue left, RuntimeValue right, TokenPosition leftPos, TokenPosition rightPos)
+        {
+            return (left, right) switch
+            {
+                (Integer l, Integer r) => l.Value - r.Value,
+                (Float l, Float r) => l.Value - r.Value,
+                (Integer l, Float r) => l.Value - r.Value,
+                (Float l, Integer r) => l.Value - r.Value,
+                _ => throw new TypeMismatchException(typeof(Number), left, leftPos)
+            };
+        }
+
+        /// <summary>
+        /// Checks if two runtime values are equal
+        /// </summary>
+        private bool AreEqual(RuntimeValue left, RuntimeValue right)
+        {
+            return (left, right) switch
+            {
+                (Integer l, Integer r) => l.Value == r.Value,
+                (Float l, Float r) => Math.Abs(l.Value - r.Value) < float.Epsilon,
+                (Integer l, Float r) => Math.Abs(l.Value - r.Value) < float.Epsilon,
+                (Float l, Integer r) => Math.Abs(l.Value - r.Value) < float.Epsilon,
+                (String l, String r) => l.Value == r.Value,
+                (Boolean l, Boolean r) => l.Value == r.Value,
+                _ => false
+            };
         }
 
         private RuntimeValue EvaluateVariable(Ast.Variable variable)

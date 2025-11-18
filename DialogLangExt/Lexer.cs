@@ -67,8 +67,10 @@ namespace BitPatch.DialogLang
                 '_' => ReadIdentifierOrKeyword(),
 
                 // Operators
-                '=' => ReadSingleCharToken(TokenType.Assign, "="),
+                '=' => ReadFromEqualsSign(),
                 '<' => ReadFromLessThanSign(),
+                '>' => ReadFromGreaterThanSign(),
+                '!' => ReadFromExclamationMark(),
 
                 // Delimiters
                 '(' => ReadSingleCharToken(TokenType.LeftParen, "("),
@@ -80,7 +82,7 @@ namespace BitPatch.DialogLang
         }
 
         /// <summary>
-        /// Reads '<<' output operator or throws exception
+        /// Reads operators starting with '<': '<<', '<=', or '<'
         /// </summary>
         private Token ReadFromLessThanSign()
         {
@@ -95,7 +97,70 @@ namespace BitPatch.DialogLang
                 return new Token(TokenType.Output, "<<", startLine, startColumn);
             }
             
-            throw new InvalidSyntaxException(startLine, startColumn);
+            if (_current == '=')
+            {
+                MoveNextChar(); // consume '='
+                return new Token(TokenType.LessOrEqual, "<=", startLine, startColumn);
+            }
+            
+            return new Token(TokenType.LessThan, "<", startLine, startColumn);
+        }
+        
+        /// <summary>
+        /// Reads operators starting with '>': '>=', or '>'
+        /// </summary>
+        private Token ReadFromGreaterThanSign()
+        {
+            var startLine = _line;
+            var startColumn = _column;
+            
+            MoveNextChar(); // consume '>'
+            
+            if (_current == '=')
+            {
+                MoveNextChar(); // consume '='
+                return new Token(TokenType.GreaterOrEqual, ">=", startLine, startColumn);
+            }
+            
+            return new Token(TokenType.GreaterThan, ">", startLine, startColumn);
+        }
+        
+        /// <summary>
+        /// Reads operators starting with '=': '==', or '='
+        /// </summary>
+        private Token ReadFromEqualsSign()
+        {
+            var startLine = _line;
+            var startColumn = _column;
+            
+            MoveNextChar(); // consume first '='
+            
+            if (_current == '=')
+            {
+                MoveNextChar(); // consume second '='
+                return new Token(TokenType.Equal, "==", startLine, startColumn);
+            }
+            
+            return new Token(TokenType.Assign, "=", startLine, startColumn);
+        }
+        
+        /// <summary>
+        /// Reads operators starting with '!': '!='
+        /// </summary>
+        private Token ReadFromExclamationMark()
+        {
+            var startLine = _line;
+            var startColumn = _column;
+            
+            MoveNextChar(); // consume '!'
+            
+            if (_current == '=')
+            {
+                MoveNextChar(); // consume '='
+                return new Token(TokenType.NotEqual, "!=", startLine, startColumn);
+            }
+            
+            throw new InvalidSyntaxException("Unexpected symbol '!'", startLine, startColumn);
         }
 
         /// <summary>

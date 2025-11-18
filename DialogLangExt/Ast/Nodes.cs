@@ -83,6 +83,38 @@ namespace BitPatch.DialogLang.Ast
     /// </summary>
     internal record XorOp(Expression Left, Expression Right, TokenPosition Position) : Expression(Position);
 
+    // Comparison Operations
+
+    /// <summary>
+    /// Node representing greater than comparison (a > b)
+    /// </summary>
+    internal record GreaterThanOp(Expression Left, Expression Right, TokenPosition Position) : Expression(Position);
+
+    /// <summary>
+    /// Node representing less than comparison (a < b)
+    /// </summary>
+    internal record LessThanOp(Expression Left, Expression Right, TokenPosition Position) : Expression(Position);
+
+    /// <summary>
+    /// Node representing greater than or equal comparison (a >= b)
+    /// </summary>
+    internal record GreaterOrEqualOp(Expression Left, Expression Right, TokenPosition Position) : Expression(Position);
+
+    /// <summary>
+    /// Node representing less than or equal comparison (a <= b)
+    /// </summary>
+    internal record LessOrEqualOp(Expression Left, Expression Right, TokenPosition Position) : Expression(Position);
+
+    /// <summary>
+    /// Node representing equality comparison (a == b)
+    /// </summary>
+    internal record EqualOp(Expression Left, Expression Right, TokenPosition Position) : Expression(Position);
+
+    /// <summary>
+    /// Node representing inequality comparison (a != b)
+    /// </summary>
+    internal record NotEqualOp(Expression Left, Expression Right, TokenPosition Position) : Expression(Position);
+
     // Unary Operations
 
     /// <summary>

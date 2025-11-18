@@ -24,7 +24,7 @@ The interpreter follows a classic three-stage pipeline architecture with streami
    - Input: `TextReader` with source code
    - Output: `IEnumerable<Token>` (streaming)
    - Converts source text into tokens using `yield return`
-   - Token types: `Identifier`, `Number`, `String`, `True`, `False`, `Assign` (=), `Output` (<<), `And`, `Or`, `Not`, `Xor`, `LeftParen` (, `RightParen` ), `Newline`, `EndOfFile`
+   - Token types: `Integer`, `Float`, `String`, `True`, `False`, `Identifier`, `Assign` (=), `Output` (<<), `And`, `Or`, `Not`, `Xor`, `GreaterThan` (>), `LessThan` (<), `GreaterOrEqual` (>=), `LessOrEqual` (<=), `Equal` (==), `NotEqual` (!=), `LeftParen` (, `RightParen` ), `Newline`, `EndOfFile`
    - Keywords: `true`, `false`, `and`, `or`, `not`, `xor`
 
 2. **Parser** (`Parser.cs`) - Syntax Analysis
@@ -33,14 +33,15 @@ The interpreter follows a classic three-stage pipeline architecture with streami
    - Builds AST nodes using `yield return`
    - Uses one-token lookahead (`_current` and `_next`)
    - Statement types: `Assign`, `Output`
-   - Expression parsing with operator precedence (low to high): `or`, `xor`, `and`, `not`, primary
+   - Expression parsing with operator precedence (low to high): `or`, `xor`, `and`, comparison (`==`, `!=`, `<`, `>`, `<=`, `>=`), `not`, primary
    - Supports parenthesized expressions
 
 3. **Interpreter** (`Interpreter.cs`) - Execution
    - Input: `IEnumerable<Ast.Statement>` from Parser
    - Output: `IEnumerable<object>` (streaming)
    - Executes statements and yields output values from `<<` statements
-   - Maintains variable scope in `Dictionary<string, object>`
+   - Maintains variable scope in `Dictionary<string, RuntimeValue>`
+   - Comparison operations use epsilon-based comparisons for float values to handle floating-point precision issues
 
 4. **Public API** (`Dialog.cs`)
    - `Execute(TextReader)` and `Execute(string)` methods
@@ -49,8 +50,9 @@ The interpreter follows a classic three-stage pipeline architecture with streami
 
 **AST Nodes** (`Ast/Nodes.cs`):
 - Base: `Node`, `Statement`, `Expression`, `Value`
-- Values: `Number`, `String`, `Boolean`, `Variable`
-- Operations: `AndOp`, `OrOp`, `XorOp`, `NotOp`
+- Values: `Integer`, `Float`, `String`, `Boolean`, `Variable`
+- Logical operations: `AndOp`, `OrOp`, `XorOp`, `NotOp`
+- Comparison operations: `GreaterThanOp`, `LessThanOp`, `GreaterOrEqualOp`, `LessOrEqualOp`, `EqualOp`, `NotEqualOp`
 - Statements: `Assign`, `Output`
 - Root: `Program`
 

@@ -109,7 +109,7 @@ namespace BitPatch.DialogLang
 
         /// <summary>
         /// Parses an expression with operator precedence
-        /// Precedence (low to high): or, xor, and, not, primary
+        /// Precedence (low to high): or, xor, and, comparison (==, !=, <, >, <=, >=), not, primary
         /// </summary>
         private Ast.Expression ParseExpression()
         {
@@ -157,17 +157,56 @@ namespace BitPatch.DialogLang
         /// </summary>
         private Ast.Expression ParseAndExpression()
         {
-            var left = ParseNotExpression();
+            var left = ParseComparisonExpression();
 
             while (_current.Type == TokenType.And)
             {
                 var position = _current.Position;
                 MoveNext(); // consume 'and'
-                var right = ParseNotExpression();
+                var right = ParseComparisonExpression();
                 left = new Ast.AndOp(left, right, position);
             }
 
             return left;
+        }
+
+        /// <summary>
+        /// Parses comparison expression (==, !=, <, >, <=, >=)
+        /// </summary>
+        private Ast.Expression ParseComparisonExpression()
+        {
+            var left = ParseNotExpression();
+
+            while (IsComparisonOperator(_current.Type))
+            {
+                var position = _current.Position;
+                var opType = _current.Type;
+                MoveNext(); // consume comparison operator
+                var right = ParseNotExpression();
+                
+                left = opType switch
+                {
+                    TokenType.GreaterThan => new Ast.GreaterThanOp(left, right, position),
+                    TokenType.LessThan => new Ast.LessThanOp(left, right, position),
+                    TokenType.GreaterOrEqual => new Ast.GreaterOrEqualOp(left, right, position),
+                    TokenType.LessOrEqual => new Ast.LessOrEqualOp(left, right, position),
+                    TokenType.Equal => new Ast.EqualOp(left, right, position),
+                    TokenType.NotEqual => new Ast.NotEqualOp(left, right, position),
+                    _ => throw new InvalidOperationException($"Unexpected comparison operator: {opType}")
+                };
+            }
+
+            return left;
+        }
+
+        /// <summary>
+        /// Checks if a token type is a comparison operator
+        /// </summary>
+        private static bool IsComparisonOperator(TokenType type)
+        {
+            return type is TokenType.GreaterThan or TokenType.LessThan 
+                       or TokenType.GreaterOrEqual or TokenType.LessOrEqual 
+                       or TokenType.Equal or TokenType.NotEqual;
         }
 
         /// <summary>
