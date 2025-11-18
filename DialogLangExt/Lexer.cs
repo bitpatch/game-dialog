@@ -116,14 +116,32 @@ namespace BitPatch.DialogLang
             _buffer.Clear();
 
             var position = new TokenPosition(_line, _column);
+            bool isFloat = false;
 
+            // Read integer part
             while (_current != -1 && char.IsDigit((char)_current))
             {
                 _buffer.Append((char)_current);
                 MoveNextChar();
             }
 
-            return new Token(TokenType.Integer, _buffer.ToString(), position);
+            // Check for decimal point
+            if (_current == '.')
+            {
+                isFloat = true;
+                _buffer.Append('.');
+                MoveNextChar();
+
+                // Read fractional part
+                while (_current != -1 && char.IsDigit((char)_current))
+                {
+                    _buffer.Append((char)_current);
+                    MoveNextChar();
+                }
+            }
+
+            var tokenType = isFloat ? TokenType.Float : TokenType.Integer;
+            return new Token(tokenType, _buffer.ToString(), position);
         }
 
         /// <summary>

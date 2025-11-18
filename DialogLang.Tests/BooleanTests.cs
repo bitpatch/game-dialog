@@ -111,7 +111,7 @@ public class BooleanTests
     [InlineData("<< true and 5", 13)]
     [InlineData("<< 42 and false", 4)]
     [InlineData("<< false or \"hello\"", 13)]
-    [InlineData("<< true xor 10", 13)]
+    [InlineData("<< true xor 10.3", 13)]
     [InlineData("<< not \"test\"", 8)]
     [InlineData("<< not (true or  123)", 18)]
     public void TypeMismatch(string script, int expectedColumn)

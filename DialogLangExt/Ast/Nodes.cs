@@ -32,9 +32,19 @@ namespace BitPatch.DialogLang.Ast
     internal abstract record Value(TokenPosition Position) : Expression(Position);
 
     /// <summary>
-    /// Node representing an integer number literal
+    /// Base class for numeric literals
     /// </summary>
-    internal record Number(int Value, TokenPosition Position) : Value(Position);
+    internal abstract record Number(TokenPosition Position) : Value(Position);
+
+    /// <summary>
+    /// Node representing an integer literal
+    /// </summary>
+    internal record Integer(int Value, TokenPosition Position) : Number(Position);
+
+    /// <summary>
+    /// Node representing a floating-point literal
+    /// </summary>
+    internal record Float(float Value, TokenPosition Position) : Number(Position);
 
     /// <summary>
     /// Node representing a string literal

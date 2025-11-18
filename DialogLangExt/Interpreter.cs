@@ -64,7 +64,8 @@ namespace BitPatch.DialogLang
         {
             return expression switch
             {
-                Ast.Number number => new Number(number.Value),
+                Ast.Integer integer => new Integer(integer.Value),
+                Ast.Float floatNode => new Float(floatNode.Value),
                 Ast.String str => new String(str.Value),
                 Ast.Boolean boolean => new Boolean(boolean.Value),
                 Ast.Variable variable => EvaluateVariable(variable),

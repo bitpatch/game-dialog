@@ -7,8 +7,8 @@ b = 20
 c = "test"
 << c
 
-x = 42
+x = 42.0
 y = true
 
 << "Result: "
-<< y and (false or y)
+<< y and (false or x)

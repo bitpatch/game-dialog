@@ -7,6 +7,7 @@ namespace BitPatch.DialogLang
     {
         // Literals
         Integer,        // 123, 456
+        Float,          // 3.14, 2.5
         String,         // "Hello World"
         True,           // true
         False,          // false
