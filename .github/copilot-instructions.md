@@ -16,6 +16,42 @@ The **DialogLang** project contains the initial development of the Game Dialog S
 
 The **DialogLangExt** project is the new, actively developed version of the Game Dialog Script Language interpreter. All current script interpreter development should focus on this project.
 
+#### Interpreter Structure
+
+The interpreter follows a classic three-stage pipeline architecture with streaming at each stage:
+
+1. **Lexer** (`Lexer.cs`) - Tokenization
+   - Input: `TextReader` with source code
+   - Output: `IEnumerable<Token>` (streaming)
+   - Converts source text into tokens using `yield return`
+   - Token types: `Identifier`, `Number`, `String`, `Assign` (=), `Output` (<<), `Newline`, `EndOfFile`
+
+2. **Parser** (`Parser.cs`) - Syntax Analysis
+   - Input: `IEnumerable<Token>` from Lexer
+   - Output: `IEnumerable<Ast.Statement>` (streaming)
+   - Builds AST nodes using `yield return`
+   - Uses one-token lookahead (`_current` and `_next`)
+   - Statement types: `Assign`, `Output`
+
+3. **Interpreter** (`Interpreter.cs`) - Execution
+   - Input: `IEnumerable<Ast.Statement>` from Parser
+   - Output: `IEnumerable<object>` (streaming)
+   - Executes statements and yields output values from `<<` statements
+   - Maintains variable scope in `Dictionary<string, object>`
+
+4. **Public API** (`Dialog.cs`)
+   - `Execute(TextReader)` and `Execute(string)` methods
+   - Chains all three stages together
+   - Returns `IEnumerable<object>` with output values
+
+**AST Nodes** (`Ast/Nodes.cs`):
+- Base: `Node`, `Statement`, `Expression`, `Value`
+- Values: `Number`, `String`, `Variable`
+- Statements: `Assign`, `Output`
+- Root: `Program`
+
+All nodes are immutable records with `TokenPosition` for error reporting.
+
 #### Streaming Architecture Instructions
 
 - Interpreter, parser, and lexer must operate in streaming mode.
