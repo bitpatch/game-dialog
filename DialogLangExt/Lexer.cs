@@ -88,7 +88,7 @@ namespace BitPatch.DialogLang
         /// </summary>
         private Token ReadFromLessThanSign()
         {
-            var startLine = _line;
+            var line = _line;
             var startColumn = _column;
             
             MoveNextChar(); // consume first '<'
@@ -96,16 +96,19 @@ namespace BitPatch.DialogLang
             if (_current == '<')
             {
                 MoveNextChar(); // consume second '<'
-                return new Token(TokenType.Output, "<<", startLine, startColumn);
+                var position = new TokenPosition(line, startColumn, _column);
+                return new Token(TokenType.Output, "<<", position);
             }
             
             if (_current == '=')
             {
                 MoveNextChar(); // consume '='
-                return new Token(TokenType.LessOrEqual, "<=", startLine, startColumn);
+                var position = new TokenPosition(line, startColumn, _column);
+                return new Token(TokenType.LessOrEqual, "<=", position);
             }
             
-            return new Token(TokenType.LessThan, "<", startLine, startColumn);
+            var finalPosition = new TokenPosition(line, startColumn, _column);
+            return new Token(TokenType.LessThan, "<", finalPosition);
         }
         
         /// <summary>
@@ -113,7 +116,7 @@ namespace BitPatch.DialogLang
         /// </summary>
         private Token ReadFromGreaterThanSign()
         {
-            var startLine = _line;
+            var line = _line;
             var startColumn = _column;
             
             MoveNextChar(); // consume '>'
@@ -121,10 +124,12 @@ namespace BitPatch.DialogLang
             if (_current == '=')
             {
                 MoveNextChar(); // consume '='
-                return new Token(TokenType.GreaterOrEqual, ">=", startLine, startColumn);
+                var position = new TokenPosition(line, startColumn, _column);
+                return new Token(TokenType.GreaterOrEqual, ">=", position);
             }
             
-            return new Token(TokenType.GreaterThan, ">", startLine, startColumn);
+            var finalPosition = new TokenPosition(line, startColumn, _column);
+            return new Token(TokenType.GreaterThan, ">", finalPosition);
         }
         
         /// <summary>
@@ -132,7 +137,7 @@ namespace BitPatch.DialogLang
         /// </summary>
         private Token ReadFromEqualsSign()
         {
-            var startLine = _line;
+            var line = _line;
             var startColumn = _column;
             
             MoveNextChar(); // consume first '='
@@ -140,10 +145,12 @@ namespace BitPatch.DialogLang
             if (_current == '=')
             {
                 MoveNextChar(); // consume second '='
-                return new Token(TokenType.Equal, "==", startLine, startColumn);
+                var position = new TokenPosition(line, startColumn, _column);
+                return new Token(TokenType.Equal, "==", position);
             }
             
-            return new Token(TokenType.Assign, "=", startLine, startColumn);
+            var finalPosition = new TokenPosition(line, startColumn, _column);
+            return new Token(TokenType.Assign, "=", finalPosition);
         }
         
         /// <summary>
@@ -151,7 +158,7 @@ namespace BitPatch.DialogLang
         /// </summary>
         private Token ReadFromExclamationMark()
         {
-            var startLine = _line;
+            var line = _line;
             var startColumn = _column;
             
             MoveNextChar(); // consume '!'
@@ -159,10 +166,11 @@ namespace BitPatch.DialogLang
             if (_current == '=')
             {
                 MoveNextChar(); // consume '='
-                return new Token(TokenType.NotEqual, "!=", startLine, startColumn);
+                var position = new TokenPosition(line, startColumn, _column);
+                return new Token(TokenType.NotEqual, "!=", position);
             }
             
-            throw new InvalidSyntaxException("Unexpected symbol '!'", startLine, startColumn);
+            throw new InvalidSyntaxException("Unexpected symbol '!'", line, startColumn);
         }
 
         /// <summary>
@@ -170,8 +178,10 @@ namespace BitPatch.DialogLang
         /// </summary>
         private Token ReadSingleCharToken(TokenType type, string value)
         {
-            var position = new TokenPosition(_line, _column);
+            var line = _line;
+            var startColumn = _column;
             MoveNextChar();
+            var position = new TokenPosition(line, startColumn, _column);
             return new Token(type, value, position);
         }
 
@@ -182,7 +192,8 @@ namespace BitPatch.DialogLang
         {
             _buffer.Clear();
 
-            var position = new TokenPosition(_line, _column);
+            var line = _line;
+            var startColumn = _column;
             bool isFloat = false;
 
             // Read integer part
@@ -207,6 +218,7 @@ namespace BitPatch.DialogLang
                 }
             }
 
+            var position = new TokenPosition(line, startColumn, _column);
             var tokenType = isFloat ? TokenType.Float : TokenType.Integer;
             return new Token(tokenType, _buffer.ToString(), position);
         }
@@ -217,7 +229,8 @@ namespace BitPatch.DialogLang
         private Token ReadIdentifierOrKeyword()
         {
             _buffer.Clear();
-            var position = new TokenPosition(_line, _column);
+            var line = _line;
+            var startColumn = _column;
 
             while (_current != -1 && (char.IsLetterOrDigit((char)_current) || (char)_current == '_'))
             {
@@ -225,6 +238,7 @@ namespace BitPatch.DialogLang
                 MoveNextChar();
             }
 
+            var position = new TokenPosition(line, startColumn, _column);
             var value = _buffer.ToString();
 
             // Check for keywords
@@ -246,7 +260,8 @@ namespace BitPatch.DialogLang
         private Token ReadString()
         {
             _buffer.Clear();
-            var position = new TokenPosition(_line, _column);
+            var line = _line;
+            var startColumn = _column;
 
             // Skip opening quote
             MoveNextChar();
@@ -295,6 +310,7 @@ namespace BitPatch.DialogLang
             // Skip closing quote
             MoveNextChar();
 
+            var position = new TokenPosition(line, startColumn, _column);
             return new Token(TokenType.String, _buffer.ToString(), position);
         }
 
@@ -303,7 +319,7 @@ namespace BitPatch.DialogLang
         /// </summary>
         private Token ReadNewline()
         {
-            var startLine = _line;
+            var line = _line;
             var startColumn = _column;
 
             // Skip all consecutive newlines and whitespace between them
@@ -325,7 +341,8 @@ namespace BitPatch.DialogLang
                 }
             }
 
-            return new Token(TokenType.Newline, "\n", startLine, startColumn);
+            var position = new TokenPosition(line, startColumn, _column);
+            return new Token(TokenType.Newline, "\n", position);
         }
 
         /// <summary>

@@ -80,11 +80,13 @@ namespace BitPatch.DialogLang
         private Ast.Assign ParseAssignment()
         {
             var identifier = ParseIdentifier();
+            var startPosition = identifier.Position;
 
             Consume(TokenType.Assign); // consume '='
 
             var expression = ParseExpression();
-            return new Ast.Assign(identifier, expression, identifier.Position);
+            var position = TokenPosition.Span(startPosition, expression.Position);
+            return new Ast.Assign(identifier, expression, position);
         }
 
         /// <summary>
@@ -92,11 +94,12 @@ namespace BitPatch.DialogLang
         /// </summary>
         private Ast.Output ParseOutput()
         {
-            var position = _current.Position;
+            var startPosition = _current.Position;
 
             Consume(TokenType.Output); // consume '<<'
 
             var expression = ParseExpression();
+            var position = TokenPosition.Span(startPosition, expression.Position);
             return new Ast.Output(expression, position);
         }
 
@@ -126,9 +129,9 @@ namespace BitPatch.DialogLang
 
             while (_current.Type == TokenType.Or)
             {
-                var position = _current.Position;
                 MoveNext(); // consume 'or'
                 var right = ParseXorExpression();
+                var position = TokenPosition.Span(left.Position, right.Position);
                 left = new Ast.OrOp(left, right, position);
             }
 
@@ -144,9 +147,9 @@ namespace BitPatch.DialogLang
 
             while (_current.Type == TokenType.Xor)
             {
-                var position = _current.Position;
                 MoveNext(); // consume 'xor'
                 var right = ParseAndExpression();
+                var position = TokenPosition.Span(left.Position, right.Position);
                 left = new Ast.XorOp(left, right, position);
             }
 
@@ -162,9 +165,9 @@ namespace BitPatch.DialogLang
 
             while (_current.Type == TokenType.And)
             {
-                var position = _current.Position;
                 MoveNext(); // consume 'and'
                 var right = ParseComparisonExpression();
+                var position = TokenPosition.Span(left.Position, right.Position);
                 left = new Ast.AndOp(left, right, position);
             }
 
@@ -180,10 +183,10 @@ namespace BitPatch.DialogLang
 
             while (IsComparisonOperator(_current.Type))
             {
-                var position = _current.Position;
                 var opType = _current.Type;
                 MoveNext(); // consume comparison operator
                 var right = ParseNotExpression();
+                var position = TokenPosition.Span(left.Position, right.Position);
                 
                 left = opType switch
                 {
@@ -219,10 +222,10 @@ namespace BitPatch.DialogLang
 
             while (_current.Type is TokenType.Plus or TokenType.Minus)
             {
-                var position = _current.Position;
                 var opType = _current.Type;
                 MoveNext(); // consume operator
                 var right = ParsePrimaryExpression();
+                var position = TokenPosition.Span(left.Position, right.Position);
                 
                 left = opType switch
                 {
@@ -242,9 +245,10 @@ namespace BitPatch.DialogLang
         {
             if (_current.Type == TokenType.Not)
             {
-                var position = _current.Position;
+                var startPosition = _current.Position;
                 MoveNext(); // consume 'not'
                 var operand = ParseNotExpression(); // right-associative
+                var position = TokenPosition.Span(startPosition, operand.Position);
                 return new Ast.NotOp(operand, position);
             }
 

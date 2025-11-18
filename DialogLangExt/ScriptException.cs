@@ -9,6 +9,8 @@ namespace BitPatch.DialogLang
     {
         public int Line => Position.Line;
         public int Column => Position.Column;
+        public int StartColumn => Position.StartColumn;
+        public int EndColumn => Position.EndColumn;
         private TokenPosition Position { get; }
 
         internal ScriptException(string message, TokenPosition position) : base(message)

@@ -40,7 +40,7 @@ try
 catch (ScriptException ex)
 {
     Console.WriteLine($"{ex.Message}, line {ex.Line}");
-    PrintScriptError(scriptPath, ex.Line, ex.Column);
+    PrintScriptError(scriptPath, ex.Line, ex.StartColumn, ex.EndColumn);
     return 1;
 }
 catch (Exception ex)
@@ -49,7 +49,7 @@ catch (Exception ex)
     return 1;
 }
 
-static void PrintScriptError(string scriptPath, int line, int column)
+static void PrintScriptError(string scriptPath, int line, int startColumn, int endColumn)
 {
     try
     {
@@ -69,23 +69,28 @@ static void PrintScriptError(string scriptPath, int line, int column)
         string prefix = "    ";
         Console.WriteLine(prefix + errorLine);
 
-        int pointerColumn = Math.Max(column, 1);
-        var pointerBuilder = new StringBuilder();
-        pointerBuilder.Append(' ', prefix.Length);
-        for (int i = 1; i < pointerColumn; i++)
+        // Build the underline with proper spacing and tabs
+        var underlineBuilder = new StringBuilder();
+        underlineBuilder.Append(' ', prefix.Length);
+        
+        // Add spaces/tabs up to the start column
+        for (int i = 1; i < startColumn; i++)
         {
             if (i <= errorLine.Length && errorLine[i - 1] == '\t')
             {
-                pointerBuilder.Append('\t');
+                underlineBuilder.Append('\t');
             }
             else
             {
-                pointerBuilder.Append(' ');
+                underlineBuilder.Append(' ');
             }
         }
 
-        pointerBuilder.Append('^');
-        Console.WriteLine(pointerBuilder.ToString());
+        // Underline the error range with tildes
+        int underlineLength = Math.Max(1, endColumn - startColumn);
+        underlineBuilder.Append('~', underlineLength);
+        
+        Console.WriteLine(underlineBuilder.ToString());
     }
     catch (Exception)
     {
