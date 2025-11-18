@@ -61,10 +61,10 @@ namespace BitPatch.DialogLang
                 // Integer number
                 >= '0' and <= '9' => ReadNumber(),
 
-                // Identifier (variable name) 
-                >= 'a' and <= 'z' => ReadIdentifier(),
-                >= 'A' and <= 'Z' => ReadIdentifier(),
-                '_' => ReadIdentifier(),
+                // Identifier or keyword (variable name, true, false)
+                >= 'a' and <= 'z' => ReadIdentifierOrKeyword(),
+                >= 'A' and <= 'Z' => ReadIdentifierOrKeyword(),
+                '_' => ReadIdentifierOrKeyword(),
 
                 // Operators
                 '=' => ReadSingleCharToken(TokenType.Assign, "="),
@@ -123,9 +123,9 @@ namespace BitPatch.DialogLang
         }
 
         /// <summary>
-        /// Reads an identifier (variable name) from the source
+        /// Reads an identifier or keyword (variable name, true, false)
         /// </summary>
-        private Token ReadIdentifier()
+        private Token ReadIdentifierOrKeyword()
         {
             _buffer.Clear();
             var position = new TokenPosition(_line, _column);
@@ -136,7 +136,15 @@ namespace BitPatch.DialogLang
                 MoveNextChar();
             }
 
-            return new Token(TokenType.Identifier, _buffer.ToString(), position);
+            var value = _buffer.ToString();
+
+            // Check for boolean keywords
+            return value switch
+            {
+                "true" => new Token(TokenType.Boolean, "true", position),
+                "false" => new Token(TokenType.Boolean, "false", position),
+                _ => new Token(TokenType.Identifier, value, position)
+            };
         }
 
         /// <summary>

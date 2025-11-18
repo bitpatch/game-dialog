@@ -132,6 +132,7 @@ namespace BitPatch.DialogLang
             {
                 TokenType.Integer => new Ast.Number(int.Parse(token.Value), token.Position),
                 TokenType.String => new Ast.String(token.Value, token.Position),
+                TokenType.Boolean => new Ast.Boolean(token.Value == "true", token.Position),
                 TokenType.Identifier => new Ast.Variable(token.Value, token.Position),
                 _ => throw new InvalidSyntaxException(token.Position)
             };

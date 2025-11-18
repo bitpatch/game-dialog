@@ -66,6 +66,7 @@ namespace BitPatch.DialogLang
             {
                 Ast.Number number => number.Value,
                 Ast.String str => str.Value,
+                Ast.Boolean boolean => boolean.Value,
                 Ast.Variable variable => EvaluateVariable(variable),
                 _ => throw new NotSupportedException($"Unsupported expression type: {expression.GetType().Name}")
             };

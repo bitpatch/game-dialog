@@ -24,7 +24,8 @@ The interpreter follows a classic three-stage pipeline architecture with streami
    - Input: `TextReader` with source code
    - Output: `IEnumerable<Token>` (streaming)
    - Converts source text into tokens using `yield return`
-   - Token types: `Identifier`, `Number`, `String`, `Assign` (=), `Output` (<<), `Newline`, `EndOfFile`
+   - Token types: `Identifier`, `Number`, `String`, `Boolean`, `Assign` (=), `Output` (<<), `Newline`, `EndOfFile`
+   - Keywords: `true`, `false`
 
 2. **Parser** (`Parser.cs`) - Syntax Analysis
    - Input: `IEnumerable<Token>` from Lexer
@@ -46,7 +47,7 @@ The interpreter follows a classic three-stage pipeline architecture with streami
 
 **AST Nodes** (`Ast/Nodes.cs`):
 - Base: `Node`, `Statement`, `Expression`, `Value`
-- Values: `Number`, `String`, `Variable`
+- Values: `Number`, `String`, `Boolean`, `Variable`
 - Statements: `Assign`, `Output`
 - Root: `Program`
 

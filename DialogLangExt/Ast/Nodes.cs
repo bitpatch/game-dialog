@@ -42,6 +42,11 @@ namespace BitPatch.DialogLang.Ast
     internal record String(string Value, TokenPosition Position) : Value(Position);
 
     /// <summary>
+    /// Node representing a boolean literal
+    /// </summary>
+    internal sealed record Boolean(bool Value, TokenPosition Position) : Value(Position);
+
+    /// <summary>
     /// Node representing a variable reference
     /// </summary>
     internal record Variable(string Name, TokenPosition Position) : Expression(Position);
