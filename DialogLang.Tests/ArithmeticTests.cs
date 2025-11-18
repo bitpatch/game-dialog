@@ -7,7 +7,7 @@ public class ArithmeticTests
     private static List<object> ExecuteScript(string script)
     {
         var dialog = new Dialog();
-        return dialog.Execute(script).ToList();
+        return [.. dialog.Execute(script)];
     }
 
     [Theory]
