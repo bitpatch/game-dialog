@@ -86,12 +86,12 @@ namespace BitPatch.DialogLang
 
             if (left is not bool leftBool)
             {
-                throw new ScriptException($"Left operand of 'and' must be boolean, got {left.GetType().Name}", andOp.Position);
+                throw new TypeMismatchException("Boolean", left.GetType().Name, andOp.Left.Position);
             }
 
             if (right is not bool rightBool)
             {
-                throw new ScriptException($"Right operand of 'and' must be boolean, got {right.GetType().Name}", andOp.Position);
+                throw new TypeMismatchException("Boolean", right.GetType().Name, andOp.Right.Position);
             }
 
             return leftBool && rightBool;
@@ -107,12 +107,12 @@ namespace BitPatch.DialogLang
 
             if (left is not bool leftBool)
             {
-                throw new ScriptException($"Left operand of 'or' must be boolean, got {left.GetType().Name}", orOp.Position);
+                throw new TypeMismatchException("Boolean", left.GetType().Name, orOp.Left.Position);
             }
 
             if (right is not bool rightBool)
             {
-                throw new ScriptException($"Right operand of 'or' must be boolean, got {right.GetType().Name}", orOp.Position);
+                throw new TypeMismatchException("Boolean", right.GetType().Name, orOp.Right.Position);
             }
 
             return leftBool || rightBool;
@@ -128,12 +128,12 @@ namespace BitPatch.DialogLang
 
             if (left is not bool leftBool)
             {
-                throw new ScriptException($"Left operand of 'xor' must be boolean, got {left.GetType().Name}", xorOp.Position);
+                throw new TypeMismatchException("Boolean", left.GetType().Name, xorOp.Left.Position);
             }
 
             if (right is not bool rightBool)
             {
-                throw new ScriptException($"Right operand of 'xor' must be boolean, got {right.GetType().Name}", xorOp.Position);
+                throw new TypeMismatchException("Boolean", right.GetType().Name, xorOp.Right.Position);
             }
 
             return leftBool ^ rightBool;
@@ -148,7 +148,7 @@ namespace BitPatch.DialogLang
 
             if (operand is not bool boolOperand)
             {
-                throw new ScriptException($"Operand of 'not' must be boolean, got {operand.GetType().Name}", notOp.Position);
+                throw new TypeMismatchException("Boolean", operand.GetType().Name, notOp.Operand.Position);
             }
 
             return !boolOperand;

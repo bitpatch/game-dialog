@@ -39,4 +39,22 @@ namespace BitPatch.DialogLang
         {
         }
     }
+
+    public class TypeMismatchException : ScriptException
+    {
+        internal TypeMismatchException(string expected, string actual, TokenPosition position)
+            : base($"Type mismatch: expected {expected}, got {actual}", position)
+        {
+        }
+
+        internal TypeMismatchException(string message, TokenPosition position)
+            : base(message, position)
+        {
+        }
+
+        internal TypeMismatchException(string message, int line, int column)
+            : base(message, new TokenPosition(line, column))
+        {
+        }
+    }
 }

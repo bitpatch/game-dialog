@@ -6,3 +6,9 @@ b = 20
 << b
 c = "test"
 << c
+
+x = 42
+y = true
+
+<< "Result: "
+<< y and x

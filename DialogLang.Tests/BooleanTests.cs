@@ -116,6 +116,6 @@ public class BooleanTests
     [InlineData("<< not 123")]
     public void TypeMismatch(string script)
     {
-        Assert.Throws<ScriptException>(() => ExecuteScript(script));
+        Assert.Throws<TypeMismatchException>(() => ExecuteScript(script));
     }
 }
