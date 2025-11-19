@@ -3,164 +3,169 @@ using System.Collections.Generic;
 namespace BitPatch.DialogLang.Ast
 {
     /// <summary>
-    /// Base class for all AST nodes
+    /// Base class for all AST nodes.
     /// </summary>
     internal abstract record Node(Location Location)
     {
     }
 
     /// <summary>
-    /// Base class for all statements (executed, do not return values)
+    /// Base class for all statements (executed, do not return values).
     /// </summary>
     internal abstract record Statement(Location Location) : Node(Location);
 
     /// <summary>
-    /// Base class for all expressions (evaluated, return values)
+    /// Base class for all expressions (evaluated, return values).
     /// </summary>
     internal abstract record Expression(Location Location) : Node(Location);
 
     /// <summary>
-    /// Root node representing the entire program
+    /// Root node representing the entire program.
     /// </summary>
-    internal record Program(List<Statement> Statements, Location Location) : Node(Location);
+    internal sealed record Program(List<Statement> Statements, Location Location) : Node(Location);
 
     /// <summary>
-    /// Base class for all value (literal) nodes
+    /// Base class for all value (literal) nodes.
     /// </summary>
     internal abstract record Value(Location Location) : Expression(Location);
 
     /// <summary>
-    /// Base class for numeric literals
+    /// Base class for numeric literals.
     /// </summary>
     internal abstract record Number(Location Location) : Value(Location);
 
     /// <summary>
-    /// Node representing an integer literal
+    /// Node representing an integer literal.
     /// </summary>
-    internal record Integer(int Value, Location Location) : Number(Location);
+    internal sealed record Integer(int Value, Location Location) : Number(Location);
 
     /// <summary>
-    /// Node representing a floating-point literal
+    /// Node representing a floating-point literal.
     /// </summary>
-    internal record Float(float Value, Location Location) : Number(Location);
+    internal sealed record Float(float Value, Location Location) : Number(Location);
 
     /// <summary>
-    /// Node representing a string literal
+    /// Node representing a string literal.
     /// </summary>
-    internal record String(string Value, Location Location) : Value(Location);
+    internal sealed record String(string Value, Location Location) : Value(Location);
 
     /// <summary>
-    /// Node representing a boolean literal
+    /// Node representing a boolean literal.
     /// </summary>
     internal sealed record Boolean(bool Value, Location Location) : Value(Location);
 
     /// <summary>
-    /// Node representing a variable reference
+    /// Node representing a variable reference.
     /// </summary>
-    internal record Variable(string Name, Location Location) : Expression(Location);
+    internal sealed record Variable(string Name, Location Location) : Expression(Location);
 
     /// <summary>
-    /// Node representing an identifier (variable name)
+    /// Node representing an identifier (variable name).
     /// </summary>
-    internal record Identifier(string Name, Location Location) : Node(Location);
+    internal sealed record Identifier(string Name, Location Location) : Node(Location);
 
     // Binary Operations
 
     /// <summary>
-    /// Node representing logical AND operation (a and b)
+    /// Node representing logical AND operation (a and b).
     /// </summary>
-    internal record AndOp(Expression Left, Expression Right, Location Location) : Expression(Location);
+    internal sealed record AndOp(Expression Left, Expression Right, Location Location) : Expression(Location);
 
     /// <summary>
-    /// Node representing logical OR operation (a or b)
+    /// Node representing logical OR operation (a or b).
     /// </summary>
-    internal record OrOp(Expression Left, Expression Right, Location Location) : Expression(Location);
+    internal sealed record OrOp(Expression Left, Expression Right, Location Location) : Expression(Location);
 
     /// <summary>
-    /// Node representing logical XOR operation (a xor b)
+    /// Node representing logical XOR operation (a xor b).
     /// </summary>
-    internal record XorOp(Expression Left, Expression Right, Location Location) : Expression(Location);
+    internal sealed record XorOp(Expression Left, Expression Right, Location Location) : Expression(Location);
 
     // Comparison Operations
 
     /// <summary>
-    /// Node representing greater than comparison (a > b)
+    /// Node representing greater than comparison (a > b).
     /// </summary>
-    internal record GreaterThanOp(Expression Left, Expression Right, Location Location) : Expression(Location);
+    internal sealed record GreaterThanOp(Expression Left, Expression Right, Location Location) : Expression(Location);
 
     /// <summary>
-    /// Node representing less than comparison (a < b)
+    /// Node representing less than comparison (a < b).
     /// </summary>
-    internal record LessThanOp(Expression Left, Expression Right, Location Location) : Expression(Location);
+    internal sealed record LessThanOp(Expression Left, Expression Right, Location Location) : Expression(Location);
 
     /// <summary>
-    /// Node representing greater than or equal comparison (a >= b)
+    /// Node representing greater than or equal comparison (a >= b).
     /// </summary>
-    internal record GreaterOrEqualOp(Expression Left, Expression Right, Location Location) : Expression(Location);
+    internal sealed record GreaterOrEqualOp(Expression Left, Expression Right, Location Location) : Expression(Location);
 
     /// <summary>
-    /// Node representing less than or equal comparison (a <= b)
+    /// Node representing less than or equal comparison (a <= b).
     /// </summary>
-    internal record LessOrEqualOp(Expression Left, Expression Right, Location Location) : Expression(Location);
+    internal sealed record LessOrEqualOp(Expression Left, Expression Right, Location Location) : Expression(Location);
 
     /// <summary>
-    /// Node representing equality comparison (a == b)
+    /// Node representing equality comparison (a == b).
     /// </summary>
-    internal record EqualOp(Expression Left, Expression Right, Location Location) : Expression(Location);
+    internal sealed record EqualOp(Expression Left, Expression Right, Location Location) : Expression(Location);
 
     /// <summary>
-    /// Node representing inequality comparison (a != b)
+    /// Node representing inequality comparison (a != b).
     /// </summary>
-    internal record NotEqualOp(Expression Left, Expression Right, Location Location) : Expression(Location);
+    internal sealed record NotEqualOp(Expression Left, Expression Right, Location Location) : Expression(Location);
 
     // Arithmetic Operations
 
     /// <summary>
-    /// Node representing addition operation (a + b)
+    /// Node representing addition operation (a + b).
     /// </summary>
-    internal record AddOp(Expression Left, Expression Right, Location Location) : Expression(Location);
+    internal sealed record AddOp(Expression Left, Expression Right, Location Location) : Expression(Location);
 
     /// <summary>
-    /// Node representing subtraction operation (a - b)
+    /// Node representing subtraction operation (a - b).
     /// </summary>
-    internal record SubOp(Expression Left, Expression Right, Location Location) : Expression(Location);
+    internal sealed record SubOp(Expression Left, Expression Right, Location Location) : Expression(Location);
 
     /// <summary>
-    /// Node representing multiplication operation (a * b)
+    /// Node representing multiplication operation (a * b).
     /// </summary>
-    internal record MulOp(Expression Left, Expression Right, Location Location) : Expression(Location);
+    internal sealed record MulOp(Expression Left, Expression Right, Location Location) : Expression(Location);
 
     /// <summary>
-    /// Node representing division operation (a / b)
+    /// Node representing division operation (a / b).
     /// </summary>
-    internal record DivOp(Expression Left, Expression Right, Location Location) : Expression(Location);
+    internal sealed record DivOp(Expression Left, Expression Right, Location Location) : Expression(Location);
 
     /// <summary>
-    /// Node representing modulo operation (a % b)
+    /// Node representing modulo operation (a % b).
     /// </summary>
-    internal record ModOp(Expression Left, Expression Right, Location Location) : Expression(Location);
+    internal sealed record ModOp(Expression Left, Expression Right, Location Location) : Expression(Location);
 
     // Unary Operations
 
     /// <summary>
-    /// Node representing logical NOT operation (not a)
+    /// Node representing logical NOT operation (not a).
     /// </summary>
-    internal record NotOp(Expression Operand, Location Location) : Expression(Location);
+    internal sealed record NotOp(Expression Operand, Location Location) : Expression(Location);
 
     /// <summary>
-    /// Node representing unary negation operation (-a)
+    /// Node representing unary negation operation (-a).
     /// </summary>
-    internal record NegateOp(Expression Operand, Location Location) : Expression(Location);
+    internal sealed record NegateOp(Expression Operand, Location Location) : Expression(Location);
 
     // Statements
 
     /// <summary>
-    /// Node representing an assignment statement
+    /// Node representing an assignment statement.
     /// </summary>
-    internal record Assign(Identifier Identifier, Expression Expression, Location Location) : Statement(Location);
+    internal sealed record Assign(Identifier Identifier, Expression Expression, Location Location) : Statement(Location);
 
     /// <summary>
-    /// Node representing an output statement (<< expression)
+    /// Node representing an output statement (<< expression).
     /// </summary>
     internal sealed record Output(Expression Expression, Location Location) : Statement(Location);
+
+    /// <summary>
+    /// Node representing a block of statements grouped by indentation.
+    /// </summary>
+    internal sealed record Block(IReadOnlyList<Statement> Statements, Location Location) : Statement(Location);
 }
