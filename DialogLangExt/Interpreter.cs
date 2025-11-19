@@ -25,8 +25,13 @@ namespace BitPatch.DialogLang
         /// </summary>
         public IEnumerable<object> Execute(IEnumerable<Ast.Statement> statements)
         {
-            foreach (var statement in statements)
+            var blockStack = new Stack<Ast.Statement>();
+            var enumerator = statements.GetEnumerator();
+
+            while (blockStack.Count > 0 || enumerator.MoveNext())
             {
+                Ast.Statement statement = blockStack.Count > 0 ? blockStack.Pop() : enumerator.Current;
+
                 switch (statement)
                 {
                     case Ast.Output output:
@@ -34,6 +39,9 @@ namespace BitPatch.DialogLang
                         break;
                     case Ast.Assign assign:
                         ExecuteAssignment(assign);
+                        break;
+                    case Ast.Block block:
+                        blockStack.PushStatements(block.Statements);
                         break;
                     default:
                         throw new NotSupportedException($"Unsupported statement type: {statement.GetType().Name}");
