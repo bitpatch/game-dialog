@@ -135,6 +135,11 @@ namespace BitPatch.DialogLang.Ast
     /// </summary>
     internal record DivOp(Expression Left, Expression Right, Location Location) : Expression(Location);
 
+    /// <summary>
+    /// Node representing modulo operation (a % b)
+    /// </summary>
+    internal record ModOp(Expression Left, Expression Right, Location Location) : Expression(Location);
+
     // Unary Operations
 
     /// <summary>

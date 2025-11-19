@@ -12,6 +12,9 @@ public class ArithmeticTests
     [InlineData("<< 7 * 8", 56)]
     [InlineData("<< -5", -5)]
     [InlineData("<< -(-5)", 5)]
+    [InlineData("<< 10 % 3", 1)]
+    [InlineData("<< 17 % 5", 2)]
+    [InlineData("<< 20 % 4", 0)]
     public void Integers(string script, int expected)
     {
         // Act
@@ -32,6 +35,8 @@ public class ArithmeticTests
     [InlineData("<< 2.5 * 4.0", 10.0f)]
     [InlineData("<< 10.0 / 2.0", 5.0f)]
     [InlineData("<< -2.5", -2.5f)]
+    [InlineData("<< 7.5 % 2.5", 0.0f)]
+    [InlineData("<< 10.0 % 3.0", 1.0f)]
     public void Floats(string script, float expected)
     {
         // Act

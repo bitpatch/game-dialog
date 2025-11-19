@@ -75,6 +75,7 @@ namespace BitPatch.DialogLang
                 '-' => ReadSingleCharToken(TokenType.Minus, "-"),
                 '*' => ReadSingleCharToken(TokenType.Multiply, "*"),
                 '/' => ReadSingleCharToken(TokenType.Divide, "/"),
+                '%' => ReadSingleCharToken(TokenType.Modulo, "%"),
 
                 // Delimiters
                 '(' => ReadSingleCharToken(TokenType.LeftParen, "("),

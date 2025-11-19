@@ -234,13 +234,13 @@ namespace BitPatch.DialogLang
         }
 
         /// <summary>
-        /// Parses multiplicative expression (* and /)
+        /// Parses multiplicative expression (*, /, %)
         /// </summary>
         private Ast.Expression ParseMultiplicativeExpression()
         {
             var left = ParseUnaryExpression();
 
-            while (_current.Type is TokenType.Multiply or TokenType.Divide)
+            while (_current.Type is TokenType.Multiply or TokenType.Divide or TokenType.Modulo)
             {
                 var opType = _current.Type;
                 MoveNext(); // consume operator
@@ -251,6 +251,7 @@ namespace BitPatch.DialogLang
                 {
                     TokenType.Multiply => new Ast.MulOp(left, right, location),
                     TokenType.Divide => new Ast.DivOp(left, right, location),
+                    TokenType.Modulo => new Ast.ModOp(left, right, location),
                     _ => throw new NotSupportedException($"Unexpected operator: {opType}")
                 };
             }

@@ -83,6 +83,7 @@ namespace BitPatch.DialogLang
                 Ast.SubOp subOp => EvaluateSubOp(subOp),
                 Ast.MulOp mulOp => EvaluateMulOp(mulOp),
                 Ast.DivOp divOp => EvaluateDivOp(divOp),
+                Ast.ModOp modOp => EvaluateModOp(modOp),
                 Ast.NegateOp negateOp => EvaluateNegateOp(negateOp),
                 _ => throw new NotSupportedException($"Unsupported expression type: {expression.GetType().Name}")
             };
@@ -322,6 +323,30 @@ namespace BitPatch.DialogLang
             ScriptException Exception(Location location)
             {
                 return new ScriptException($"Cannot divide {left.GetType().Name} by {right.GetType().Name}", location);
+            }
+        }
+
+        /// <summary>
+        /// Evaluates modulo operation (%)
+        /// </summary>
+        private RuntimeValue EvaluateModOp(Ast.ModOp op)
+        {
+            var left = EvaluateExpression(op.Left);
+            var right = EvaluateExpression(op.Right);
+
+            return (left, right) switch
+            {
+                (_, Number n) when n.IsNil => throw new ScriptException("Division by zero", op.Right.Location),
+                (Integer l, Integer r) when r.Value != 0 => new Integer(l.Value % r.Value),
+                (Number l, Number r) when !r.IsNil => new Float(l.FloatValue % r.FloatValue),
+                (Number, not Number) => throw Exception(op.Right.Location),
+                (not Number, Number) => throw Exception(op.Left.Location),
+                _ => throw Exception(op.Left.Location | op.Right.Location)
+            };
+
+            ScriptException Exception(Location location)
+            {
+                return new ScriptException($"Cannot calculate modulo of {left.GetType().Name} by {right.GetType().Name}", location);
             }
         }
 

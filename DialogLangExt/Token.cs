@@ -24,6 +24,7 @@ namespace BitPatch.DialogLang
         Minus,          // -
         Multiply,       // *
         Divide,         // /
+        Modulo,         // %
         
         // Comparison operators
         GreaterThan,    // >
