@@ -38,6 +38,10 @@ namespace BitPatch.DialogLang
         LeftParen,      // (
         RightParen,     // )
         
+        // Indentation
+        Indent,         // Increase in indentation level
+        Dedent,         // Decrease in indentation level
+        
         // Special
         Newline,        // End of line (statement terminator)
         EndOfFile
