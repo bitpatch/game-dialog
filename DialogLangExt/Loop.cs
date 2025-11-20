@@ -13,26 +13,42 @@ namespace BitPatch.DialogLang
         /// <summary>
         /// The number of iterations executed so far.
         /// </summary>
-        public int IterationCount { get; private set; } = 0;
+        private int _iterationCount;
 
+        /// <summary>
+        /// The location of the loop in the source code.
+        /// </summary>
         private readonly Location _location;
 
+        /// <summary>
+        /// Initializes a new instance of the Loop class.
+        /// </summary>
+        /// <param name="location">The location of the loop in the source code.</param>
         public Loop(Location location)
         {
             _location = location;
-            IterationCount = 0;
+            _iterationCount = 0;
         }
 
-        public Loop IncrementIteration()
+        /// <summary>
+        /// Increments the iteration count by one.
+        /// </summary>
+        /// <returns>The current Loop instance.</returns>
+        public Loop Increment()
         {
-            IterationCount++;
+            _iterationCount++;
 
             return this;
         }
 
+        /// <summary>
+        /// Asserts that the iteration count does not exceed the specified maximum.
+        /// </summary>
+        /// <param name="maxIterations">The maximum allowed iterations.</param>
+        /// <returns>The current Loop instance.</returns>
         public Loop Assert(int maxIterations)
         {
-            if (IterationCount > maxIterations)
+            if (_iterationCount > maxIterations)
             {
                 throw new ScriptException($"More than {maxIterations} iterations exceeded at line {Line}, possible infinite loop", _location);
             }

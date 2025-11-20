@@ -8,9 +8,20 @@ namespace BitPatch.DialogLang
     /// </summary>
     internal class Interpreter
     {
+        /// <summary>
+        /// Dictionary to store variable names and their runtime values.
+        /// </summary>
         private readonly Dictionary<string, RuntimeValue> _variables;
+
+        /// <summary>
+        /// Maximum allowed iterations for loops to prevent infinite loops.
+        /// </summary>
         private readonly int MaxLoopIterations;
 
+        /// <summary>
+        /// Initializes a new instance of the Interpreter class.
+        /// </summary>
+        /// <param name="maxLoopIterations">Maximum allowed iterations for loops to prevent infinite loops.</param>
         public Interpreter(int maxLoopIterations = 100)
         {
             MaxLoopIterations = maxLoopIterations;
@@ -25,6 +36,9 @@ namespace BitPatch.DialogLang
         /// <summary>
         /// Executes statements one by one as they arrive (streaming), yielding output values.
         /// </summary>
+        /// <param name="statements">The enumerable of statements to execute.</param>
+        /// <returns>Enumerable of output values.</returns>
+        /// <exception cref="NotSupportedException">Thrown when the statement type is not supported.</exception>
         public IEnumerable<object> Execute(IEnumerable<Ast.Statement> statements)
         {
             var blockStack = new Stack<Ast.Statement>();
@@ -49,7 +63,7 @@ namespace BitPatch.DialogLang
                     case Ast.While whileLoop:
                         if (EvaluateCondition(whileLoop.Condition).Value)
                         {
-                            loops.Get(whileLoop.Location).IncrementIteration().Assert(MaxLoopIterations);
+                            loops.Get(whileLoop.Location).Increment().Assert(MaxLoopIterations);
                             blockStack.Push(whileLoop); // Re-push the while loop for the next iteration
                             blockStack.PushStatements(whileLoop.Body.Statements);
                         }
@@ -65,24 +79,29 @@ namespace BitPatch.DialogLang
         }
 
         /// <summary>
-        /// Executes a program (legacy method for compatibility)
+        /// Executes a program (legacy method for compatibility).
         /// </summary>
+        /// <param name="program">The program to execute.</param>
         public IEnumerable<object> Execute(Ast.Program program)
         {
             return Execute(program.Statements);
         }
 
         /// <summary>
-        /// Executes an assignment statement
+        /// Executes an assignment statement.
         /// </summary>
+        /// <param name="node">The assignment statement node.</param>
         private void ExecuteAssignment(Ast.Assign node)
         {
             _variables[node.Identifier.Name] = EvaluateExpression(node.Expression);
         }
 
         /// <summary>
-        /// Evaluates an expression and returns its value
+        /// Evaluates an expression and returns its value.
         /// </summary>
+        /// <param name="expression">The expression to evaluate.</param>
+        /// <returns>The evaluated runtime value.</returns>
+        /// <exception cref="NotSupportedException">Thrown when the expression type is not supported.</exception>
         private RuntimeValue EvaluateExpression(Ast.Expression expression)
         {
             return expression switch
@@ -92,10 +111,10 @@ namespace BitPatch.DialogLang
                 Ast.String str => new String(str.Value),
                 Ast.Boolean boolean => new Boolean(boolean.Value),
                 Ast.Variable variable => EvaluateVariable(variable),
-                Ast.AndOp andOp => new Boolean(EvaluateAndOp(andOp)),
-                Ast.OrOp orOp => new Boolean(EvaluateOrOp(orOp)),
-                Ast.XorOp xorOp => new Boolean(EvaluateXorOp(xorOp)),
-                Ast.NotOp notOp => new Boolean(EvaluateNotOp(notOp)),
+                Ast.AndOp andOp => EvaluateAndOp(andOp),
+                Ast.OrOp orOp => EvaluateOrOp(orOp),
+                Ast.XorOp xorOp => EvaluateXorOp(xorOp),
+                Ast.NotOp notOp => EvaluateNotOp(notOp),
                 Ast.GreaterThanOp greaterThan => EvaluateGreaterThanOp(greaterThan),
                 Ast.LessThanOp lessThan => EvaluateLessThanOp(lessThan),
                 Ast.GreaterOrEqualOp greaterOrEqual => EvaluateGreaterOrEqualOp(greaterOrEqual),
@@ -113,20 +132,25 @@ namespace BitPatch.DialogLang
         }
 
         /// <summary>
-        /// Evaluates logical AND operation
+        /// Evaluates logical AND operation.
         /// </summary>
-        private bool EvaluateAndOp(Ast.AndOp andOp)
+        /// <param name="andOp">The AND operation node.</param>
+        /// <returns>The evaluated Boolean result.</returns>
+        /// <exception cref="ScriptException">Thrown when the operands are not Boolean values.</exception>
+        private Boolean EvaluateAndOp(Ast.AndOp andOp)
         {
             var left = EvaluateExpression(andOp.Left);
             var right = EvaluateExpression(andOp.Right);
 
-            return (left, right) switch
+            var value = (left, right) switch
             {
                 (Boolean l, Boolean r) => l.Value && r.Value,
                 (Boolean l, not Boolean) => throw Exception(andOp.Right.Location),
                 (not Boolean, Boolean r) => throw Exception(andOp.Left.Location),
                 _ => throw Exception(andOp.Left.Location | andOp.Right.Location)
             };
+
+            return new Boolean(value);
 
             ScriptException Exception(Location location)
             {
@@ -135,20 +159,25 @@ namespace BitPatch.DialogLang
         }
 
         /// <summary>
-        /// Evaluates logical OR operation
+        /// Evaluates logical OR operation.
         /// </summary>
-        private bool EvaluateOrOp(Ast.OrOp orOp)
+        /// <param name="orOp">The OR operation node.</param>
+        /// <returns>The evaluated Boolean result.</returns>
+        /// <exception cref="ScriptException">Thrown when the operands are not Boolean values.</exception>
+        private Boolean EvaluateOrOp(Ast.OrOp orOp)
         {
             var left = EvaluateExpression(orOp.Left);
             var right = EvaluateExpression(orOp.Right);
 
-            return (left, right) switch
+            var value = (left, right) switch
             {
                 (Boolean l, Boolean r) => l.Value || r.Value,
                 (Boolean l, not Boolean) => throw Exception(orOp.Right.Location),
                 (not Boolean, Boolean r) => throw Exception(orOp.Left.Location),
                 _ => throw Exception(orOp.Left.Location | orOp.Right.Location)
             };
+
+            return new Boolean(value);
 
             ScriptException Exception(Location location)
             {
@@ -157,20 +186,25 @@ namespace BitPatch.DialogLang
         }
 
         /// <summary>
-        /// Evaluates logical XOR operation
+        /// Evaluates logical XOR operation.
         /// </summary>
-        private bool EvaluateXorOp(Ast.XorOp xorOp)
+        /// <param name="xorOp">The XOR operation node.</param>
+        /// <returns>The evaluated Boolean result.</returns>
+        /// <exception cref="ScriptException">Thrown when the operands are not Boolean values.</exception>
+        private Boolean EvaluateXorOp(Ast.XorOp xorOp)
         {
             var left = EvaluateExpression(xorOp.Left);
             var right = EvaluateExpression(xorOp.Right);
 
-            return (left, right) switch
+            var value = (left, right) switch
             {
                 (Boolean l, Boolean r) => l.Value ^ r.Value,
                 (Boolean l, not Boolean) => throw Exception(xorOp.Right.Location),
                 (not Boolean, Boolean r) => throw Exception(xorOp.Left.Location),
                 _ => throw Exception(xorOp.Left.Location | xorOp.Right.Location)
             };
+
+            return new Boolean(value);
 
             ScriptException Exception(Location location)
             {
@@ -179,9 +213,12 @@ namespace BitPatch.DialogLang
         }
 
         /// <summary>
-        /// Evaluates logical NOT operation
+        /// Evaluates logical NOT operation.
         /// </summary>
-        private bool EvaluateNotOp(Ast.NotOp notOp)
+        /// <param name="notOp">The NOT operation node.</param>
+        /// <returns>The evaluated Boolean result.</returns>
+        /// <exception cref="ScriptException">Thrown when the operand is not a Boolean value.</exception>
+        private Boolean EvaluateNotOp(Ast.NotOp notOp)
         {
             var operand = EvaluateExpression(notOp.Operand);
 
@@ -190,12 +227,14 @@ namespace BitPatch.DialogLang
                 throw new ScriptException($"Cannot evaluate NOT operation on type {operand.GetType().Name}", notOp.Operand.Location);
             }
 
-            return !boolOperand.Value;
+            return new Boolean(!boolOperand.Value);
         }
 
         /// <summary>
-        /// Evaluates greater than comparison (>)
+        /// Evaluates greater than comparison (>).
         /// </summary>
+        /// <param name="op">The greater than operation node.</param>
+        /// <returns>The evaluated Boolean result.</returns>
         private Boolean EvaluateGreaterThanOp(Ast.GreaterThanOp op)
         {
             var diff = CompareNumeric(op.Left, op.Right);
@@ -203,8 +242,10 @@ namespace BitPatch.DialogLang
         }
 
         /// <summary>
-        /// Evaluates less than comparison (<)
+        /// Evaluates less than comparison (<).
         /// </summary>
+        /// <param name="op">The less than operation node.</param>
+        /// <returns>The evaluated Boolean result.</returns>
         private Boolean EvaluateLessThanOp(Ast.LessThanOp op)
         {
             var diff = CompareNumeric(op.Left, op.Right);
@@ -212,8 +253,10 @@ namespace BitPatch.DialogLang
         }
 
         /// <summary>
-        /// Evaluates greater than or equal comparison (>=)
+        /// Evaluates greater than or equal comparison (>=).
         /// </summary>
+        /// <param name="op">The greater than or equal operation node.</param>
+        /// <returns>The evaluated Boolean result.</returns>
         private Boolean EvaluateGreaterOrEqualOp(Ast.GreaterOrEqualOp op)
         {
             var diff = CompareNumeric(op.Left, op.Right);
@@ -221,8 +264,10 @@ namespace BitPatch.DialogLang
         }
 
         /// <summary>
-        /// Evaluates less than or equal comparison (<=)
+        /// Evaluates less than or equal comparison (<=).
         /// </summary>
+        /// <param name="op">The less than or equal operation node.</param>
+        /// <returns>The evaluated Boolean result.</returns>
         private Boolean EvaluateLessOrEqualOp(Ast.LessOrEqualOp op)
         {
             var diff = CompareNumeric(op.Left, op.Right);
@@ -230,8 +275,10 @@ namespace BitPatch.DialogLang
         }
 
         /// <summary>
-        /// Evaluates equality comparison (==)
+        /// Evaluates equality comparison (==).
         /// </summary>
+        /// <param name="op">The equality operation node.</param>
+        /// <returns>The evaluated Boolean result.</returns>
         private Boolean EvaluateEqualOp(Ast.EqualOp op)
         {
             var left = EvaluateExpression(op.Left);
@@ -240,8 +287,10 @@ namespace BitPatch.DialogLang
         }
 
         /// <summary>
-        /// Evaluates inequality comparison (!=)
+        /// Evaluates inequality comparison (!=).
         /// </summary>
+        /// <param name="op">The inequality operation node.</param>
+        /// <returns>The evaluated Boolean result.</returns>
         private Boolean EvaluateNotEqualOp(Ast.NotEqualOp op)
         {
             var left = EvaluateExpression(op.Left);
@@ -250,20 +299,23 @@ namespace BitPatch.DialogLang
         }
 
         /// <summary>
-        /// Evaluates addition operation (+)
+        /// Evaluates addition operation (+).
         /// </summary>
+        /// <param name="op">The addition operation node.</param>
+        /// <returns>The evaluated runtime value.</returns>
+        /// <exception cref="ScriptException">Thrown when the values cannot be added.</exception>
         private RuntimeValue EvaluateAddOp(Ast.AddOp op)
         {
             var left = EvaluateExpression(op.Left);
             var right = EvaluateExpression(op.Right);
 
-            // String concatenation with type conversion
+            // String concatenation with type conversion.
             if (left is String || right is String)
             {
                 return new String(left.ToString() + right.ToString());
             }
 
-            // Numeric addition
+            // Numeric addition.
             return (left, right) switch
             {
                 (Integer l, Integer r) => new Integer(l.Value + r.Value),
@@ -280,9 +332,12 @@ namespace BitPatch.DialogLang
         }
 
         /// <summary>
-        /// Evaluates subtraction operation (-)
+        /// Evaluates subtraction operation (-).
         /// </summary>
-        private RuntimeValue EvaluateSubOp(Ast.SubOp op)
+        /// <param name="op">The subtraction operation node.</param>
+        /// <returns>The evaluated numeric value.</returns>
+        /// <exception cref="ScriptException">Thrown when the values cannot be subtracted.</exception>
+        private Number EvaluateSubOp(Ast.SubOp op)
         {
             var left = EvaluateExpression(op.Left);
             var right = EvaluateExpression(op.Right);
@@ -303,9 +358,12 @@ namespace BitPatch.DialogLang
         }
 
         /// <summary>
-        /// Evaluates multiplication operation (*)
+        /// Evaluates multiplication operation (*).
         /// </summary>
-        private RuntimeValue EvaluateMulOp(Ast.MulOp op)
+        /// <param name="op">The multiplication operation node.</param>
+        /// <returns>The evaluated numeric value.</returns>
+        /// <exception cref="ScriptException">Thrown when the values cannot be multiplied.</exception>
+        private Number EvaluateMulOp(Ast.MulOp op)
         {
             var left = EvaluateExpression(op.Left);
             var right = EvaluateExpression(op.Right);
@@ -326,14 +384,17 @@ namespace BitPatch.DialogLang
         }
 
         /// <summary>
-        /// Evaluates division operation (/)
+        /// Evaluates division operation (/).
         /// </summary>
-        private RuntimeValue EvaluateDivOp(Ast.DivOp op)
+        /// <param name="op">The division operation node.</param>
+        /// <returns>The evaluated numeric value.</returns>
+        /// <exception cref="ScriptException">Thrown when the values cannot be divided.</exception>
+        private Number EvaluateDivOp(Ast.DivOp op)
         {
             var left = EvaluateExpression(op.Left);
             var right = EvaluateExpression(op.Right);
 
-            // Division always returns float to handle cases like 5 / 2 = 2.5
+            // Division always returns float to handle cases like 5 / 2 = 2.5.
             return (left, right) switch
             {
                 (_, Number n) when n.IsNil => throw new ScriptException("Division by zero", op.Right.Location),
@@ -350,9 +411,12 @@ namespace BitPatch.DialogLang
         }
 
         /// <summary>
-        /// Evaluates modulo operation (%)
+        /// Evaluates modulo operation (%).
         /// </summary>
-        private RuntimeValue EvaluateModOp(Ast.ModOp op)
+        /// <param name="op">The modulo operation node.</param>
+        /// <returns>The evaluated numeric value.</returns>
+        /// <exception cref="ScriptException">Thrown when the values cannot be used for modulo operation.</exception>
+        private Number EvaluateModOp(Ast.ModOp op)
         {
             var left = EvaluateExpression(op.Left);
             var right = EvaluateExpression(op.Right);
@@ -374,9 +438,12 @@ namespace BitPatch.DialogLang
         }
 
         /// <summary>
-        /// Evaluates unary negation operation (-)
+        /// Evaluates unary negation operation (-).
         /// </summary>
-        private RuntimeValue EvaluateNegateOp(Ast.NegateOp op)
+        /// <param name="op">The unary negation operation node.</param>
+        /// <returns>The evaluated numeric value.</returns>
+        /// <exception cref="ScriptException">Thrown when the operand is not a numeric value.</exception>
+        private Number EvaluateNegateOp(Ast.NegateOp op)
         {
             var operand = EvaluateExpression(op.Operand);
 
@@ -389,8 +456,12 @@ namespace BitPatch.DialogLang
         }
 
         /// <summary>
-        /// Compares two numeric values
+        /// Compares two numeric values.
         /// </summary>
+        /// <param name="left">The left expression.</param>
+        /// <param name="right">The right expression.</param>
+        /// <returns>The difference between left and right values.</returns>
+        /// <exception cref="ScriptException">Thrown when the values cannot be compared.</exception>
         private float CompareNumeric(Ast.Expression left, Ast.Expression right)
         {
             var leftValue = EvaluateExpression(left);
@@ -413,8 +484,11 @@ namespace BitPatch.DialogLang
         }
 
         /// <summary>
-        /// Checks if two runtime values are equal
+        /// Checks if two runtime values are equal.
         /// </summary>
+        /// <param name="left">The left runtime value.</param>
+        /// <param name="right">The right runtime value.</param>
+        /// <returns>True if the values are equal; otherwise, false.</returns>
         private bool AreEqual(RuntimeValue left, RuntimeValue right)
         {
             return (left, right) switch
@@ -429,6 +503,12 @@ namespace BitPatch.DialogLang
             };
         }
 
+        /// <summary>
+        /// Evaluates a variable and returns its value.
+        /// </summary>
+        /// <param name="variable">The variable node.</param>
+        /// <returns>The runtime value of the variable.</returns>
+        /// <exception cref="ScriptException">Thrown when the variable is not defined.</exception>
         private RuntimeValue EvaluateVariable(Ast.Variable variable)
         {
             if (_variables.TryGetValue(variable.Name, out var value))
@@ -438,7 +518,13 @@ namespace BitPatch.DialogLang
 
             throw new ScriptException($"Variable '{variable.Name}' is not defined", variable.Location);
         }
-
+        
+        /// <summary>
+        /// Evaluates a condition expression and returns its boolean value.
+        /// </summary>
+        /// <param name="expression">The condition expression.</param>
+        /// <returns>The evaluated Boolean value.</returns>
+        /// <exception cref="ScriptException">Thrown when the expression does not evaluate to a Boolean value.</exception>
         private Boolean EvaluateCondition(Ast.Expression expression)
         {
             var value = EvaluateExpression(expression);
@@ -452,15 +538,17 @@ namespace BitPatch.DialogLang
         }
 
         /// <summary>
-        /// Gets the value of a variable
+        /// Gets the value of a variable.
         /// </summary>
+        /// <param name="name">The name of the variable.</param>
+        /// <returns>The value of the variable if it exists; otherwise, null.</returns>
         public object? GetVariable(string name)
         {
             return _variables.TryGetValue(name, out var value) ? value.ToObject() : null;
         }
 
         /// <summary>
-        /// Clears all variables
+        /// Clears all variables.
         /// </summary>
         public void Clear()
         {
