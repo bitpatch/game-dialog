@@ -26,5 +26,25 @@ namespace BitPatch.DialogLang
 
             return expression;
         }
+
+        public static Loop Get(this Stack<Loop> loops, Location location)
+        {
+            if (loops.Count is 0 || loops.Peek().Line != location.Line)
+            {
+                var loop = new Loop(location);
+                loops.Push(loop);
+                return loop;
+            }
+
+            return loops.Peek();
+        }
+
+        public static void Clear(this Stack<Loop> loops, Location location)
+        {
+            if (loops.Count > 0 && loops.Peek().Line == location.Line)
+            {
+                loops.Pop();
+            }
+        }
     }
 }

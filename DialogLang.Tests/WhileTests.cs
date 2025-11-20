@@ -81,4 +81,18 @@ public class WhileTests
         Assert.Equal(7, ex.Initial);
         Assert.Equal(12, ex.Final);
     }
+
+    [Fact]
+    public void InfinitBool()
+    {
+        var source = """
+        a = 0
+        while true
+            a = a + 1
+            << a
+        """;    
+
+        var ex = Assert.Throws<ScriptException>(() => Utils.Execute(source));
+        Assert.Equal(2, ex.Line);
+    }
 }

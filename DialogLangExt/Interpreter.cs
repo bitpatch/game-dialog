@@ -29,6 +29,7 @@ namespace BitPatch.DialogLang
         {
             var blockStack = new Stack<Ast.Statement>();
             var enumerator = statements.GetEnumerator();
+            var loops = new Stack<Loop>();
 
             while (blockStack.Count > 0 || enumerator.MoveNext())
             {
@@ -48,8 +49,13 @@ namespace BitPatch.DialogLang
                     case Ast.While whileLoop:
                         if (EvaluateCondition(whileLoop.Condition).Value)
                         {
+                            loops.Get(whileLoop.Location).IncrementIteration().Assert(MaxLoopIterations);
                             blockStack.Push(whileLoop); // Re-push the while loop for the next iteration
                             blockStack.PushStatements(whileLoop.Body.Statements);
+                        }
+                        else
+                        {
+                            loops.Clear(whileLoop.Location);
                         }
                         break;
                     default:
