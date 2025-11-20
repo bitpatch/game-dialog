@@ -121,11 +121,6 @@ namespace BitPatch.DialogLang
             Consume(TokenType.While); // consume 'while'
             var condition = ParseExpression();
 
-            if (condition is not Ast.IBoolean)
-            {
-                throw new InvalidSyntaxException("Expression cannot be boolean", condition.Location);
-            }
-
             Consume(TokenType.Newline); // expect newline after condition
 
             // Expect an indented block (body cannot be empty)
@@ -136,7 +131,7 @@ namespace BitPatch.DialogLang
 
             var body = ParseBlock();
 
-            return new Ast.While(condition, body, startLocation | condition.Location);
+            return new Ast.While(condition.AssertBoolean(), body, startLocation | condition.Location);
         }
 
         private Ast.Identifier ParseIdentifier()
@@ -167,7 +162,7 @@ namespace BitPatch.DialogLang
             {
                 MoveNext(); // consume 'or'
                 var right = ParseXorExpression();
-                left = new Ast.OrOp(left, right, left.Location | right.Location);
+                left = new Ast.OrOp(left.AssertBoolean(), right.AssertBoolean(), left.Location | right.Location);
             }
 
             return left;
@@ -184,7 +179,7 @@ namespace BitPatch.DialogLang
             {
                 MoveNext(); // consume 'xor'
                 var right = ParseAndExpression();
-                left = new Ast.XorOp(left, right, left.Location | right.Location);
+                left = new Ast.XorOp(left.AssertBoolean(), right.AssertBoolean(), left.Location | right.Location);
             }
 
             return left;
@@ -201,7 +196,7 @@ namespace BitPatch.DialogLang
             {
                 MoveNext(); // consume 'and'
                 var right = ParseComparisonExpression();
-                left = new Ast.AndOp(left, right, left.Location | right.Location);
+                left = new Ast.AndOp(left.AssertBoolean(), right.AssertBoolean(), left.Location | right.Location);
             }
 
             return left;
@@ -214,7 +209,8 @@ namespace BitPatch.DialogLang
         {
             var left = ParseNotExpression();
 
-            while (IsComparisonOperator(_current.Type))
+            while (_current.Type is TokenType.GreaterThan or TokenType.LessThan or TokenType.GreaterOrEqual
+                                 or TokenType.LessOrEqual or TokenType.Equal or TokenType.NotEqual)
             {
                 var opType = _current.Type;
                 MoveNext(); // consume comparison operator
@@ -234,16 +230,6 @@ namespace BitPatch.DialogLang
             }
 
             return left;
-        }
-
-        /// <summary>
-        /// Checks if a token type is a comparison operator
-        /// </summary>
-        private static bool IsComparisonOperator(TokenType type)
-        {
-            return type is TokenType.GreaterThan or TokenType.LessThan
-                       or TokenType.GreaterOrEqual or TokenType.LessOrEqual
-                       or TokenType.Equal or TokenType.NotEqual;
         }
 
         /// <summary>
@@ -323,7 +309,7 @@ namespace BitPatch.DialogLang
                 var startLocation = _current.Location;
                 MoveNext(); // consume 'not'
                 var operand = ParseNotExpression(); // right-associative
-                return new Ast.NotOp(operand, startLocation | operand.Location);
+                return new Ast.NotOp(operand.AssertBoolean(), startLocation | operand.Location);
             }
 
             return ParseAdditiveExpression();

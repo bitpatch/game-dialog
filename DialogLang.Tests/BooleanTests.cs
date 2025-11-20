@@ -49,15 +49,16 @@ public class BooleanTests
     }
 
     [Theory]
-    [InlineData("<< true and 5", 13, 14)]
-    [InlineData("<< 42 and \"hi\"", 4, 15)]
+    [InlineData("<< false or (5 + 1)", 14, 19)]
     [InlineData("<< false or \"hello\"", 13, 20)]
-    [InlineData("<< true xor 10.3", 13, 17)]
-    [InlineData("<< not \"test\"", 8, 14)]
     [InlineData("<< not (true or 123)", 17, 20)]
-    public void TypeMismatch(string script, int initial, int final)
+    [InlineData("<< true xor 10.3", 13, 17)]
+    [InlineData("<< true and 5", 13, 14)]
+    [InlineData("<< 42 and \"hi\"", 4, 6)]
+    [InlineData("<< not \"test\"", 8, 14)]
+    public void CannotBeBoolean(string script, int initial, int final)
     {
-        var ex = Assert.Throws<ScriptException>(() => Utils.Execute(script));
+        var ex = Assert.Throws<InvalidSyntaxException>(() => Utils.Execute(script));
         Assert.Equal(initial, ex.Initial);
         Assert.Equal(final, ex.Final);
     }

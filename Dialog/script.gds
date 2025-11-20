@@ -1,7 +1,7 @@
 << "How are you?"
 a = 5
 
-while a > 0
+while 42 or (5 + 1)
     << "a: " + a
     a = a - 1
 

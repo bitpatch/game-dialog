@@ -16,5 +16,15 @@ namespace BitPatch.DialogLang
         {
             return new Location(location.Line, location.Final, location.Final + 1);
         }
+
+        public static Ast.Expression AssertBoolean(this Ast.Expression expression)
+        {
+            if (expression is not Ast.IBoolean)
+            {
+                throw new InvalidSyntaxException("Expression cannot be boolean", expression.Location);
+            }
+
+            return expression;
+        }
     }
 }
