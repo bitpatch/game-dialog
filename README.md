@@ -1,10 +1,33 @@
 # Game Dialog Script CLI
 
+[![GitHub Release](https://img.shields.io/github/v/release/bitpatch/game-dialog-cli)](https://github.com/bitpatch/game-dialog-cli/releases)
+[![NuGet](https://img.shields.io/nuget/v/gdialog.svg)](https://www.nuget.org/packages/gdialog/)
+[![Homebrew](https://img.shields.io/badge/homebrew-bitpatch%2Ftools-orange)](https://github.com/bitpatch/homebrew-tools)
+
 A simple command-line tool for running Game Dialog Script Language files.
 
 ## What It Does
 
 Game Dialog Script CLI is an interpreter that executes `.gds` (Game Dialog Script) files. It reads your dialog scripts and outputs the results directly to the console, making it easy to test and debug your game dialogs without running the full game.
+
+## Installation
+
+### NuGet (Global .NET Tool)
+
+Install `gdialog` as a global .NET tool:
+
+```bash
+dotnet tool install --g gdialog
+```
+
+### Homebrew
+
+Install via Homebrew:
+
+```bash
+brew tap bitpatch/tools
+brew install gdialog
+```
 
 ## Usage
 
