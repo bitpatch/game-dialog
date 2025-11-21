@@ -18,6 +18,21 @@
     <PackageProjectUrl>https://github.com/bitpatch/game-dialog-cli</PackageProjectUrl>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)'=='Homebrew'">
+    <RuntimeIdentifier>osx-arm64</RuntimeIdentifier>
+    <SelfContained>true</SelfContained>
+    <PublishSingleFile>true</PublishSingleFile>
+    <DebugType>none</DebugType>
+  </PropertyGroup>
+
+  <Target Name="CreateHomebrewTar" AfterTargets="Publish" Condition="'$(Configuration)'=='Homebrew'">
+    <PropertyGroup>
+      <HomebrewTarFile>$(MSBuildProjectDirectory)/gdialog-$(Version)-$(RuntimeIdentifier).tar.gz</HomebrewTarFile>
+    </PropertyGroup>
+    <Message Text="Creating Homebrew archive: $(HomebrewTarFile)" Importance="High" />
+    <Exec Command="tar -czf &quot;$(HomebrewTarFile)&quot; -C &quot;$(PublishDir)&quot; ." WorkingDirectory="$(MSBuildProjectDirectory)" />
+  </Target>
+
   <ItemGroup>
     <ProjectReference Include="..\DialogLang\DialogLang.csproj" />
   </ItemGroup>
