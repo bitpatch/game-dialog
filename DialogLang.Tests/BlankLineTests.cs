@@ -1,9 +1,30 @@
+using BitPatch.DialogLang;
+
 namespace DialogLang.Tests;
 
 public class BlankLineTests
 {
     [Fact]
-    public void ScriptEndingWithBlankLine()
+    public void EndingWithBlankLineParsing()
+    {
+        // Arrange
+        var script = "<< \"Hello!\"\n"; // Script with trailing newline
+
+        var expected = new[]
+        {
+            TokenType.Output, TokenType.StringStart, TokenType.InlineString, TokenType.StringEnd,
+            TokenType.Newline, TokenType.EndOfSource
+        };
+
+        // Act
+        var output = script.Tokenize();
+
+        // Assert
+        Assert.Equal(expected, output);
+    }
+
+    [Fact]
+    public void EndingWithBlankLine()
     {
         // Arrange
         var script = "<< \"Hello!\"\n"; // Script with trailing newline
