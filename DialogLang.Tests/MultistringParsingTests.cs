@@ -37,9 +37,8 @@ public class MultistringParsingTests
         var expected = new TokenSequence(
         [
             TokenType.Output, TokenType.StringStart,
-            TokenType.Indent, TokenType.InlineString,
+            TokenType.InlineString,
             TokenType.InlineString, TokenType.StringEnd, TokenType.Newline,
-            TokenType.Dedent,
             TokenType.EndOfSource
         ]);
 
@@ -65,9 +64,8 @@ public class MultistringParsingTests
         var expected = new TokenSequence(
         [
             TokenType.Output, TokenType.StringStart,
-            TokenType.Indent, TokenType.InlineString, TokenType.InlineExpressionStart, TokenType.InlineString, TokenType.InlineExpressionEnd,
+            TokenType.InlineString, TokenType.InlineExpressionStart, TokenType.InlineString, TokenType.InlineExpressionEnd,
             TokenType.InlineString, TokenType.StringEnd, TokenType.Newline,
-            TokenType.Dedent,
             TokenType.EndOfSource
         ]);
 
