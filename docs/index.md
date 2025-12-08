@@ -1,16 +1,13 @@
 ---
 title: Home
-layout: home
-nav_order: 1
+layout: default
 ---
 
 # Game Dialog Script Language
 
 A simple language for writing game dialogs with integrated logic. Write dialogs as plain text with a bit of logic, and the interpreter does the rest.
-{: .fs-6 .fw-300 }
 
-[Get Started]({% link installation.md %}){: .btn .btn-primary .fs-5 .mb-4 .mb-md-0 .mr-2 }
-[View on GitHub](https://github.com/bitpatch/game-dialog){: .btn .fs-5 .mb-4 .mb-md-0 }
+[Get Started](installation.md) · [Syntax](syntax.md) · [Examples](examples.md) · [GitHub](https://github.com/bitpatch/game-dialog)
 
 ---
 
