@@ -1,6 +1,7 @@
 ---
 title: Syntax
 layout: default
+nav_order: 3
 ---
 
 # Syntax Reference
@@ -146,4 +147,5 @@ if condition
 << "This is outside"
 ```
 
-> ⚠️ **Warning:** Mix of spaces and tabs will cause an error. Pick one style and stick with it.
+{: .warning }
+> Mix of spaces and tabs will cause an error. Pick one style and stick with it.

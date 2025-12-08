@@ -1,0 +1,59 @@
+// GitHub-like color scheme for Just the Docs
+
+// Font stack (GitHub uses system fonts)
+$body-font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
+$mono-font-family: ui-monospace, SFMono-Regular, SF Mono, Menlo, Consolas, Liberation Mono, monospace;
+
+// GitHub colors
+$white: #ffffff;
+$grey-lt-000: #f6f8fa;
+$grey-lt-100: #eaeef2;
+$grey-lt-200: #d0d7de;
+$grey-lt-300: #afb8c1;
+$grey-dk-000: #6e7781;
+$grey-dk-100: #57606a;
+$grey-dk-200: #424a53;
+$grey-dk-300: #32383f;
+
+$blue-000: #ddf4ff;
+$blue-100: #54aeff;
+$blue-200: #218bff;
+$blue-300: #0969da;
+
+$green-000: #dafbe1;
+$green-100: #4ac26b;
+$green-200: #2da44e;
+$green-300: #1a7f37;
+
+$yellow-000: #fff8c5;
+$yellow-100: #d4a72c;
+$yellow-200: #bf8700;
+$yellow-300: #9a6700;
+
+$red-000: #ffebe9;
+$red-100: #ff8182;
+$red-200: #fa4549;
+$red-300: #cf222e;
+
+// Theme colors
+$body-background-color: $white;
+$sidebar-color: $grey-lt-000;
+$search-background-color: $white;
+$table-background-color: $white;
+$code-background-color: $grey-lt-000;
+
+$body-text-color: #1f2328;
+$body-heading-color: #1f2328;
+$nav-child-link-color: $grey-dk-100;
+$search-result-preview-color: $grey-dk-000;
+
+$link-color: $blue-300;
+$btn-primary-color: $green-200;
+
+$base-button-color: $grey-lt-000;
+
+// Code highlighting (GitHub style)
+$code-linenumber-color: $grey-lt-300;
+
+// Border colors
+$border-color: $grey-lt-200;

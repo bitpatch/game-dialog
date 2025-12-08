@@ -1,11 +1,23 @@
-title: Game Dialog Script Language
+title: Game Dialog
 description: A simple language for writing game dialogs with integrated logic
-remote_theme: pages-themes/primer@v0.5.4
+remote_theme: just-the-docs/just-the-docs
 
 url: https://bitpatch.github.io
 baseurl: /game-dialog
 
-show_downloads: false
+aux_links:
+  GitHub: https://github.com/bitpatch/game-dialog
+  NuGet: https://www.nuget.org/packages/gdialog/
 
-plugins:
-  - jekyll-remote-theme
+footer_content: "MIT License &copy; BitPatch"
+
+# GitHub-like colors and fonts
+color_scheme: github
+
+callouts:
+  note:
+    color: blue
+  warning:
+    color: yellow
+  tip:
+    color: green
