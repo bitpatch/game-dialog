@@ -1,59 +1,47 @@
-// GitHub-like color scheme for Just the Docs
+// GitHub Dark theme for Just the Docs
 
 // Font stack (GitHub uses system fonts)
 $body-font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
 $mono-font-family: ui-monospace, SFMono-Regular, SF Mono, Menlo, Consolas, Liberation Mono, monospace;
 
-// GitHub colors
-$white: #ffffff;
-$grey-lt-000: #f6f8fa;
-$grey-lt-100: #eaeef2;
-$grey-lt-200: #d0d7de;
-$grey-lt-300: #afb8c1;
-$grey-dk-000: #6e7781;
-$grey-dk-100: #57606a;
-$grey-dk-200: #424a53;
-$grey-dk-300: #32383f;
+// GitHub Dark colors
+$grey-dk-000: #6e7681;
+$grey-dk-100: #7d8590;
+$grey-dk-200: #848d97;
+$grey-dk-300: #8d96a0;
 
-$blue-000: #ddf4ff;
-$blue-100: #54aeff;
-$blue-200: #218bff;
-$blue-300: #0969da;
+$grey-lt-000: #161b22;  // sidebar bg
+$grey-lt-100: #21262d;  // hover bg
+$grey-lt-200: #30363d;  // border
+$grey-lt-300: #484f58;
 
-$green-000: #dafbe1;
-$green-100: #4ac26b;
-$green-200: #2da44e;
-$green-300: #1a7f37;
+// Background colors
+$body-background-color: #0d1117;
+$sidebar-color: #010409;
+$search-background-color: #0d1117;
+$table-background-color: #161b22;
+$code-background-color: #161b22;
 
-$yellow-000: #fff8c5;
-$yellow-100: #d4a72c;
-$yellow-200: #bf8700;
-$yellow-300: #9a6700;
+// Text colors
+$body-text-color: #e6edf3;
+$body-heading-color: #e6edf3;
+$nav-child-link-color: #7d8590;
+$search-result-preview-color: #7d8590;
 
-$red-000: #ffebe9;
-$red-100: #ff8182;
-$red-200: #fa4549;
-$red-300: #cf222e;
+// Link color (GitHub blue)
+$link-color: #4493f8;
 
-// Theme colors
-$body-background-color: $white;
-$sidebar-color: $grey-lt-000;
-$search-background-color: $white;
-$table-background-color: $white;
-$code-background-color: $grey-lt-000;
+// Button colors
+$btn-primary-color: #238636;
+$base-button-color: #21262d;
 
-$body-text-color: #1f2328;
-$body-heading-color: #1f2328;
-$nav-child-link-color: $grey-dk-100;
-$search-result-preview-color: $grey-dk-000;
+// Border
+$border-color: #30363d;
 
-$link-color: $blue-300;
-$btn-primary-color: $green-200;
+// Search
+$search-text-color: #e6edf3;
+$search-border-color: #30363d;
 
-$base-button-color: $grey-lt-000;
+// Code
+$code-linenumber-color: #6e7681;
 
-// Code highlighting (GitHub style)
-$code-linenumber-color: $grey-lt-300;
-
-// Border colors
-$border-color: $grey-lt-200;
