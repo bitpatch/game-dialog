@@ -25,7 +25,7 @@ dotnet tool update -g gdialog
 Install via Homebrew:
 
 ```bash
-brew tap bitpatch/tools
+brew tap gamedialog/tools
 brew install gdialog
 ```
 

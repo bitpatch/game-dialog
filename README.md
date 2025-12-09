@@ -1,8 +1,8 @@
 # Game Dialog Script CLI
 
-[![GitHub Release](https://img.shields.io/github/v/release/bitpatch/game-dialog)](https://github.com/bitpatch/game-dialog/releases)
+[![GitHub Release](https://img.shields.io/github/v/release/gamedialog/gdialog)](https://github.com/gamedialog/gdialog/releases)
 [![NuGet](https://img.shields.io/nuget/v/gdialog.svg)](https://www.nuget.org/packages/gdialog/)
-[![Homebrew](https://img.shields.io/badge/homebrew-bitpatch%2Ftools-orange)](https://github.com/bitpatch/homebrew-tools)
+[![Homebrew](https://img.shields.io/badge/homebrew-gamedialog%2Ftools-orange)](https://github.com/gamedialog/homebrew-tools)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 A simple command-line tool for running Game Dialog Script Language files.
@@ -26,7 +26,7 @@ dotnet tool install -g gdialog
 Install via Homebrew:
 
 ```bash
-brew tap bitpatch/tools
+brew tap gamedialog/tools
 brew install gdialog
 ```
 

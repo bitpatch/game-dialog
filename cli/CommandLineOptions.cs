@@ -38,7 +38,7 @@ internal static class CommandLineOptions
         Console.WriteLine("  -v, --vars                    Display variables after script execution");
         Console.WriteLine("                                (used as: gdialog script.gds -v)");
         Console.WriteLine();
-        Console.WriteLine("For more information, visit: https://github.com/bitpatch/game-dialog");
+        Console.WriteLine("For more information, visit: https://github.com/gamedialog/gdialog");
         return 0;
     }
 
@@ -52,7 +52,7 @@ internal static class CommandLineOptions
         Console.WriteLine("with game engines such as Unity and Godot or any applications");
         Console.WriteLine("written in C#.");
         Console.WriteLine();
-        Console.WriteLine("For more information, visit: https://github.com/bitpatch/game-dialog-lang");
+        Console.WriteLine("For more information, visit: https://github.com/gamedialog/lang");
         Console.WriteLine();
         Console.WriteLine("---------------------------");
         return 0;

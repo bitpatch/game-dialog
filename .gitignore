@@ -484,4 +484,4 @@ $RECYCLE.BIN/
 *.swp
 
 # Test script files
-GDialog/script.gds
+cli/script.gds

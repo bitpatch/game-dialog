@@ -26,7 +26,7 @@ The main interpreter implementation for Game Dialog Script Language (.gds files)
   - `Ast.Nodes` - AST node definitions using C# records
 - **Unity Integration**: Includes `GameDialogScript.asmdef` for Unity compatibility
 
-### GDialog (CLI Tool)
+### cli (CLI Tool)
 
 Command-line tool for running .gds script files.
 
@@ -91,10 +91,10 @@ The Game Dialog Script Language supports:
 
 ### Building and Testing
 
-- **Build**: Use VS Code's default build task or `dotnet build GDialog/GDialog.csproj`
+- **Build**: Use VS Code's default build task or `dotnet build cli/cli.csproj`
 - **Tests**: Run all tests with `dotnet test DialogLang.Tests/`
 - **Local Testing**: Use `Utils.Execute("script")` in tests for quick execution
-- **CLI Testing**: Build then run `dotnet run --project GDialog script.gds`
+- **CLI Testing**: Build then run `dotnet run --project cli script.gds`
 
 ### Distribution Builds
 

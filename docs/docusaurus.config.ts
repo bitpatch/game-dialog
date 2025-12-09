@@ -15,14 +15,14 @@ const config: Config = {
   },
 
   // Set the production url of your site here
-  url: 'https://bitpatch.github.io',
+  url: 'https://gamedialog.github.io',
   // Set the /<baseUrl>/ pathname under which your site is served
   // For GitHub pages deployment, it is often '/<projectName>/'
-  baseUrl: '/game-dialog/',
+  baseUrl: '/gdialog/',
 
   // GitHub pages deployment config.
-  organizationName: 'bitpatch',
-  projectName: 'game-dialog',
+  organizationName: 'gamedialog',
+  projectName: 'gdialog',
 
   onBrokenLinks: 'throw',
 
@@ -65,7 +65,7 @@ const config: Config = {
       },
       items: [
         {
-          href: 'https://github.com/bitpatch/game-dialog',
+          href: 'https://github.com/gamedialog/gdialog',
           label: 'GitHub',
           position: 'right',
         },
@@ -92,7 +92,7 @@ const config: Config = {
           items: [
             {
               label: 'GitHub',
-              href: 'https://github.com/bitpatch/game-dialog',
+              href: 'https://github.com/gamedialog/gdialog',
             },
             {
               label: 'NuGet',
@@ -101,7 +101,7 @@ const config: Config = {
           ],
         },
       ],
-      copyright: `Copyright © ${new Date().getFullYear()} BitPatch. Built with Docusaurus.`,
+      copyright: `Copyright © ${new Date().getFullYear()} Game Dialog. Built with Docusaurus.`,
     },
     prism: {
       theme: prismThemes.github,
