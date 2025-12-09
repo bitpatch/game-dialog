@@ -41,8 +41,7 @@ const config: Config = {
         docs: {
           routeBasePath: '/', // Docs as the homepage
           sidebarPath: './sidebars.ts',
-          editUrl:
-            'https://github.com/bitpatch/game-dialog/tree/main/docs/',
+          editUrl: undefined, // Disable "Edit this page" button
         },
         blog: false, // Disabled for now
         theme: {
