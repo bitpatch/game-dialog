@@ -1,4 +1,4 @@
-using BitPatch.DialogLang;
+using GameDialog.Lang;
 using Xunit.Abstractions;
 
 namespace Lang.Tests;

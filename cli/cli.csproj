@@ -3,6 +3,7 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>net10.0</TargetFramework>
+    <RootNamespace>GameDialog.Cli</RootNamespace>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
@@ -37,7 +38,7 @@
   </Target>
 
   <ItemGroup>
-    <ProjectReference Include="..\lang\lang.csproj" />
+    <ProjectReference Include="..\lang\Lang.csproj" />
   </ItemGroup>
 
 </Project>

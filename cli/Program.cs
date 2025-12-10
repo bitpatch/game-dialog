@@ -1,4 +1,4 @@
-﻿using GDialog;
+﻿using GameDialog.Cli;
 
 // Handle command-line options and script execution
 if (args.Length == 0)

@@ -1,5 +1,5 @@
 <Solution>
-  <Project Path="cli/cli.csproj" />
-  <Project Path="lang/lang.csproj" />
-  <Project Path="lang.tests/lang.tests.csproj" />
+  <Project Path="cli/Cli.csproj" />
+  <Project Path="lang/Lang.csproj" />
+  <Project Path="lang.tests/Lang.Tests.csproj" />
 </Solution>

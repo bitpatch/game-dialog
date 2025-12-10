@@ -1,6 +1,6 @@
 using System.Globalization;
 
-namespace GDialog;
+namespace GameDialog.Cli;
 
 /// <summary>
 /// Utility for parsing user input into appropriate types.

@@ -1,6 +1,6 @@
-using BitPatch.DialogLang;
+using GameDialog.Lang;
 
-namespace GDialog;
+namespace GameDialog.Cli;
 
 /// <summary>
 /// Handles execution of Game Dialog Script files.

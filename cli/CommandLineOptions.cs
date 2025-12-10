@@ -1,6 +1,6 @@
 using System.Reflection;
 
-namespace GDialog;
+namespace GameDialog.Cli;
 
 /// <summary>
 /// Handles command-line option processing and display.

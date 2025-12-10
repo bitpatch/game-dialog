@@ -1,4 +1,4 @@
-using BitPatch.DialogLang.Ast;
+using GameDialog.Lang.Ast;
 
 namespace Lang.Tests;
 

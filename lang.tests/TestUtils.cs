@@ -1,5 +1,5 @@
 using System.Diagnostics;
-using BitPatch.DialogLang;
+using GameDialog.Lang;
 
 namespace Lang.Tests;
 
@@ -19,7 +19,7 @@ internal static class Utils
     /// <summary>
     /// Parses the given source code into a list of AST statements.
     /// </summary>
-    public static List<BitPatch.DialogLang.Ast.Statement> Parse(this string source)
+    public static List<GameDialog.Lang.Ast.Statement> Parse(this string source)
     {
         using var lexer = new Lexer(Source.Inline(source));
         var parser = new Parser(lexer.Tokenize());
@@ -132,14 +132,14 @@ internal static class Utils
     /// <summary>
     /// Recursively adds the types of the statement and its inner statements to the result list.
     /// </summary>
-    public static List<Type> AddTypesTo(this BitPatch.DialogLang.Ast.Statement statement, List<Type> result)
+    public static List<Type> AddTypesTo(this GameDialog.Lang.Ast.Statement statement, List<Type> result)
     {
         result.Add(statement.GetType());
 
         return statement switch
         {
-            BitPatch.DialogLang.Ast.Block block => block.Statements.AddTypesTo(result),
-            BitPatch.DialogLang.Ast.While whileLoop => whileLoop.Body.AddTypesTo(result),
+            GameDialog.Lang.Ast.Block block => block.Statements.AddTypesTo(result),
+            GameDialog.Lang.Ast.While whileLoop => whileLoop.Body.AddTypesTo(result),
             _ => result
         };
     }
@@ -147,7 +147,7 @@ internal static class Utils
     /// <summary>
     /// Recursively adds the types of the statements and their inner statements to the result list.
     /// </summary>
-    public static List<Type> AddTypesTo(this IReadOnlyList<BitPatch.DialogLang.Ast.Statement> statements, List<Type> result)
+    public static List<Type> AddTypesTo(this IReadOnlyList<GameDialog.Lang.Ast.Statement> statements, List<Type> result)
     {
         foreach (var statement in statements)
         {
